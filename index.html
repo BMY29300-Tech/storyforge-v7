@@ -589,25 +589,10 @@ hr { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
 <div class="modal-overlay hidden" id="settings-modal">
   <div class="modal">
     <div class="modal-title">⚙️ Settings</div>
-    <div class="modal-sub">Your API keys are saved only in your browser. Never shared.</div>
+    <div class="modal-sub">Keys saved in your browser only. Never shared.</div>
     <div class="field">
-      <label>Google AI Studio API Key (Gemini + Imagen)</label>
-      <input type="password" id="s-apikey" placeholder="AIza..." />
-    </div>
-    <div class="field">
-      <label>Gemini Model</label>
-      <select id="s-gemini-model">
-        <option value="gemini-2.0-flash">Gemini 2.0 Flash (Recommended)</option>
-        <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
-        <option value="gemini-1.5-pro">Gemini 1.5 Pro</option>
-      </select>
-    </div>
-    <div class="field">
-      <label>Imagen Model</label>
-      <select id="s-imagen-model">
-        <option value="imagen-3.0-generate-002">Imagen 3.0 (Recommended)</option>
-        <option value="imagen-3.0-fast-generate-001">Imagen 3.0 Fast</option>
-      </select>
+      <label>Groq API Key (Script Agent)</label>
+      <input type="password" id="s-apikey" placeholder="gsk_..." />
     </div>
     <div class="modal-footer">
       <button class="btn btn-secondary" onclick="closeSettings()">Cancel</button>
@@ -732,23 +717,26 @@ function buildImagePrompt(scene) {
 // ═══════════════════════════════════════
 async function callGemini(prompt) {
   const s = getSettings();
-  if (!s.apiKey) throw new Error('No API key. Go to Settings.');
-  const model = s.geminiModel || 'gemini-2.0-flash';
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${s.apiKey}`;
-  const res = await fetch(url, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+  if (!s.apiKey) throw new Error("No Groq API key. Go to Settings.");
+  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + s.apiKey
+    },
     body: JSON.stringify({
-      contents: [{ parts: [{ text: prompt }] }],
-      generationConfig: { temperature: 0.8, maxOutputTokens: 8192 }
+      model: "llama-3.3-70b-versatile",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.8,
+      max_tokens: 8192
     })
   });
   if (!res.ok) {
     const err = await res.json();
-    throw new Error(err.error?.message || `HTTP ${res.status}`);
+    throw new Error(err.error?.message || "HTTP " + res.status);
   }
   const data = await res.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+  return data.choices?.[0]?.message?.content || "";
 }
 
 // ═══════════════════════════════════════
@@ -1009,7 +997,7 @@ function renderEpCard(ep) {
 
 // ─── SCRIPT AGENT ───────────────────────
 function renderScript(c) {
-  setTopbar('Script Agent', 'Gemini 2.5 Flash → 20 scenes in seconds');
+  setTopbar('Script Agent', 'Groq Llama 3.3 → 20 scenes in seconds');
   const nextEpNum = (state.episodes.length > 0 
     ? Math.max(...state.episodes.map(e => e.epNum || 0)) + 1 
     : 1);
@@ -1496,7 +1484,7 @@ function renderCharacters(c) {
 function openSettings() {
   const s = getSettings();
   document.getElementById('s-apikey').value = s.apiKey || '';
-  document.getElementById('s-gemini-model').value = s.geminiModel || 'gemini-2.0-flash';
+  
   document.getElementById('s-imagen-model').value = s.imagenModel || 'imagen-3.0-generate-002';
   document.getElementById('settings-modal').classList.remove('hidden');
 }
@@ -1505,9 +1493,9 @@ function closeSettings() {
 }
 function saveSettings() {
   const apiKey = document.getElementById('s-apikey').value.trim();
-  const geminiModel = document.getElementById('s-gemini-model').value;
-  const imagenModel = document.getElementById('s-imagen-model').value;
-  localStorage.setItem('cr_settings', JSON.stringify({ apiKey, geminiModel, imagenModel }));
+  
+  
+  localStorage.setItem('cr_settings', JSON.stringify({ apiKey }));
   closeSettings();
   flash('✅ Settings saved');
   renderView(state.view);
