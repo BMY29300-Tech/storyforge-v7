@@ -1,0 +1,1638 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StoryForge v7 — Curious Rama</title>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0D0905;
+  --s1: #181008;
+  --s2: #221710;
+  --s3: #2E2018;
+  --border: #3A2A1E;
+  --orange: #F08C1E;
+  --orange-dim: #A85F10;
+  --orange-glow: rgba(240,140,30,0.15);
+  --teal: #2BB5A0;
+  --teal-dim: #1A7060;
+  --green: #5CBB7A;
+  --red: #E05555;
+  --purple: #9B7FD4;
+  --text: #F0DEC8;
+  --text-dim: #9A7A60;
+  --text-faint: #4A3525;
+  --r: 10px;
+  --r-sm: 6px;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  font-family: 'Nunito', system-ui, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  overflow: hidden;
+  height: 100vh;
+}
+/* SIDEBAR */
+#sidebar {
+  width: 220px;
+  min-width: 220px;
+  background: var(--s1);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  overflow: hidden;
+}
+.logo {
+  padding: 20px 16px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.logo-title {
+  font-size: 15px;
+  font-weight: 900;
+  color: var(--orange);
+  letter-spacing: -0.3px;
+  line-height: 1.2;
+}
+.logo-sub {
+  font-size: 10px;
+  color: var(--text-dim);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 3px;
+}
+.logo-badge {
+  display: inline-block;
+  background: var(--orange-glow);
+  border: 1px solid var(--orange-dim);
+  color: var(--orange);
+  font-size: 9px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 20px;
+  margin-top: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.nav {
+  flex: 1;
+  padding: 12px 8px;
+  overflow-y: auto;
+}
+.nav-section {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  padding: 8px 8px 4px;
+  margin-top: 4px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-dim);
+  transition: all 0.15s;
+  border: 1px solid transparent;
+  margin-bottom: 2px;
+}
+.nav-item:hover { background: var(--s2); color: var(--text); }
+.nav-item.active {
+  background: var(--orange-glow);
+  border-color: var(--orange-dim);
+  color: var(--orange);
+}
+.nav-item .icon { font-size: 16px; width: 20px; text-align: center; }
+.nav-badge {
+  margin-left: auto;
+  background: var(--s3);
+  color: var(--text-dim);
+  font-size: 10px;
+  font-weight: 700;
+  padding: 1px 6px;
+  border-radius: 10px;
+  min-width: 20px;
+  text-align: center;
+}
+.nav-item.active .nav-badge { background: var(--orange-dim); color: var(--orange); }
+.sidebar-bottom {
+  padding: 12px 8px;
+  border-top: 1px solid var(--border);
+}
+.settings-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 10px;
+  border-radius: var(--r-sm);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-dim);
+  transition: all 0.15s;
+  width: 100%;
+  border: none;
+  background: transparent;
+}
+.settings-btn:hover { background: var(--s2); color: var(--text); }
+/* MAIN */
+#main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.topbar {
+  background: var(--s1);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 56px;
+}
+.topbar-title { font-size: 16px; font-weight: 900; color: var(--text); }
+.topbar-sub { font-size: 12px; color: var(--text-dim); font-weight: 600; margin-top: 1px; }
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+/* BUTTONS */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 9px 18px;
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  border: none;
+  transition: all 0.15s;
+  font-family: inherit;
+}
+.btn-primary {
+  background: var(--orange);
+  color: #1A0A00;
+}
+.btn-primary:hover { background: #FFB040; transform: translateY(-1px); }
+.btn-secondary {
+  background: var(--s2);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+.btn-secondary:hover { background: var(--s3); }
+.btn-teal {
+  background: var(--teal-dim);
+  color: var(--text);
+  border: 1px solid var(--teal);
+}
+.btn-teal:hover { background: var(--teal); color: #000; }
+.btn-sm { padding: 5px 12px; font-size: 12px; }
+.btn-xs { padding: 4px 9px; font-size: 11px; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
+/* INPUTS */
+.field { margin-bottom: 16px; }
+.field label {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-bottom: 6px;
+}
+.field input, .field textarea, .field select {
+  width: 100%;
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  color: var(--text);
+  font-family: 'Nunito', inherit;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 10px 14px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.field input:focus, .field textarea:focus, .field select:focus {
+  border-color: var(--orange-dim);
+}
+.field textarea { resize: vertical; min-height: 70px; }
+.field select { cursor: pointer; }
+/* CARDS */
+.card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 20px;
+  margin-bottom: 16px;
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+.card-title {
+  font-size: 14px;
+  font-weight: 800;
+  color: var(--text);
+}
+.card-sub {
+  font-size: 12px;
+  color: var(--text-dim);
+  font-weight: 600;
+  margin-top: 2px;
+}
+/* SCENE LIST */
+.scene-item {
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 12px 14px;
+  margin-bottom: 8px;
+  display: grid;
+  grid-template-columns: 32px 1fr auto;
+  gap: 12px;
+  align-items: start;
+  transition: border-color 0.15s;
+}
+.scene-item:hover { border-color: var(--orange-dim); }
+.scene-num {
+  width: 32px;
+  height: 32px;
+  background: var(--s3);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 900;
+  color: var(--orange);
+  border: 1px solid var(--orange-dim);
+  flex-shrink: 0;
+}
+.scene-body {}
+.scene-location {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--teal);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 4px;
+}
+.scene-action {
+  font-size: 13px;
+  color: var(--text);
+  font-weight: 600;
+  margin-bottom: 5px;
+  line-height: 1.4;
+}
+.scene-dialogue {
+  font-size: 12px;
+  color: var(--orange);
+  font-weight: 700;
+  font-style: italic;
+}
+.scene-speaker {
+  font-size: 10px;
+  color: var(--text-dim);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-right: 5px;
+  font-style: normal;
+}
+.scene-actions { display: flex; flex-direction: column; gap: 4px; align-items: flex-end; }
+.img-thumb {
+  width: 60px;
+  height: 90px;
+  border-radius: 4px;
+  object-fit: cover;
+  border: 1px solid var(--border);
+  display: block;
+  background: var(--s3);
+}
+.img-placeholder {
+  width: 60px;
+  height: 90px;
+  border-radius: 4px;
+  background: var(--s3);
+  border: 1px dashed var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  color: var(--text-faint);
+}
+/* STATUS */
+.status-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.tag-done { background: rgba(92,187,122,0.15); color: var(--green); border: 1px solid rgba(92,187,122,0.3); }
+.tag-pending { background: var(--s3); color: var(--text-dim); border: 1px solid var(--border); }
+.tag-ep { background: var(--orange-glow); color: var(--orange); border: 1px solid var(--orange-dim); }
+/* ALERT */
+.alert {
+  padding: 12px 16px;
+  border-radius: var(--r-sm);
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.alert-warn { background: rgba(240,140,30,0.1); border: 1px solid var(--orange-dim); color: var(--orange); }
+.alert-info { background: rgba(43,181,160,0.1); border: 1px solid var(--teal-dim); color: var(--teal); }
+.alert-err { background: rgba(224,85,85,0.1); border: 1px solid var(--red); color: var(--red); }
+/* LOADER */
+.spinner {
+  width: 18px; height: 18px;
+  border: 2px solid var(--border);
+  border-top-color: var(--orange);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  display: inline-block;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+/* PROGRESS */
+.progress-bar {
+  height: 4px;
+  background: var(--s3);
+  border-radius: 2px;
+  overflow: hidden;
+  margin: 8px 0;
+}
+.progress-fill {
+  height: 100%;
+  background: var(--orange);
+  border-radius: 2px;
+  transition: width 0.3s;
+}
+/* GRID */
+.ep-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+.ep-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.ep-card:hover { border-color: var(--orange-dim); transform: translateY(-2px); }
+.ep-card-num { font-size: 10px; font-weight: 800; color: var(--orange); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 6px; }
+.ep-card-title { font-size: 15px; font-weight: 900; color: var(--text); line-height: 1.3; margin-bottom: 8px; }
+.ep-card-lesson { font-size: 12px; color: var(--text-dim); font-weight: 600; line-height: 1.4; margin-bottom: 12px; font-style: italic; }
+.ep-card-stats { display: flex; gap: 8px; flex-wrap: wrap; }
+/* GROK BATCH */
+.batch-box {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: var(--r-sm);
+  padding: 14px;
+  font-family: 'Space Mono', monospace;
+  font-size: 11px;
+  color: var(--text-dim);
+  line-height: 1.7;
+  max-height: 300px;
+  overflow-y: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+/* MODAL */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+.modal {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 24px;
+  width: 100%;
+  max-width: 520px;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+.modal-title { font-size: 18px; font-weight: 900; color: var(--text); margin-bottom: 6px; }
+.modal-sub { font-size: 13px; color: var(--text-dim); font-weight: 600; margin-bottom: 20px; line-height: 1.5; }
+.modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 20px; }
+/* TABS */
+.tab-row { display: flex; gap: 4px; border-bottom: 1px solid var(--border); margin-bottom: 20px; }
+.tab-btn {
+  padding: 8px 16px;
+  font-size: 12px;
+  font-weight: 800;
+  color: var(--text-dim);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  font-family: inherit;
+  transition: all 0.15s;
+  margin-bottom: -1px;
+}
+.tab-btn.active { color: var(--orange); border-bottom-color: var(--orange); }
+.tab-btn:hover:not(.active) { color: var(--text); }
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+/* HIDDEN */
+.hidden { display: none !important; }
+/* SEPARATOR */
+hr { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
+/* COLS */
+.two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+@media (max-width: 900px) { .two-col { grid-template-columns: 1fr; } }
+/* WELCOME */
+.stat-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 24px; }
+.stat-card {
+  background: var(--s1);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px;
+  text-align: center;
+}
+.stat-val { font-size: 28px; font-weight: 900; color: var(--orange); line-height: 1; }
+.stat-label { font-size: 11px; font-weight: 700; color: var(--text-dim); text-transform: uppercase; letter-spacing: 0.8px; margin-top: 4px; }
+/* IMAGE VIEWER MODAL */
+.img-viewer {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: var(--r);
+  display: block;
+}
+/* COPY FLASH */
+.copy-flash {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: var(--teal);
+  color: #000;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 10px 20px;
+  border-radius: var(--r-sm);
+  z-index: 9999;
+  animation: fadeUp 0.2s ease;
+  pointer-events: none;
+}
+@keyframes fadeUp { from { opacity:0; transform:translateY(8px); } to { opacity:1; transform:translateY(0); } }
+/* CHAR LOCK DISPLAY */
+.char-lock {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+.char-pill {
+  padding: 4px 10px;
+  background: var(--s2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text-dim);
+}
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div id="sidebar">
+  <div class="logo">
+    <div class="logo-title">🎬 StoryForge</div>
+    <div class="logo-sub">Production Studio</div>
+    <div class="logo-badge">Curious Rama v7</div>
+  </div>
+  <nav class="nav">
+    <div class="nav-section">Workspace</div>
+    <div class="nav-item active" onclick="showView('dashboard')" id="nav-dashboard">
+      <span class="icon">🏠</span> Dashboard
+    </div>
+    <div class="nav-section">Agents</div>
+    <div class="nav-item" onclick="showView('script')" id="nav-script">
+      <span class="icon">📝</span> Script Agent
+    </div>
+    <div class="nav-item" onclick="showView('images')" id="nav-images">
+      <span class="icon">🖼️</span> Image Agent
+    </div>
+    <div class="nav-item" onclick="showView('prompts')" id="nav-prompts">
+      <span class="icon">🎬</span> Video Prompts
+    </div>
+    <div class="nav-section">Resources</div>
+    <div class="nav-item" onclick="showView('library')" id="nav-library">
+      <span class="icon">📚</span> Library
+      <span class="nav-badge" id="lib-count">0</span>
+    </div>
+    <div class="nav-item" onclick="showView('characters')" id="nav-characters">
+      <span class="icon">🎭</span> Characters
+    </div>
+  </nav>
+  <div class="sidebar-bottom">
+    <button class="settings-btn" onclick="openSettings()">
+      <span class="icon">⚙️</span> Settings
+    </button>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div id="main">
+  <div class="topbar">
+    <div>
+      <div class="topbar-title" id="topbar-title">Dashboard</div>
+      <div class="topbar-sub" id="topbar-sub">Curious Rama Production Studio</div>
+    </div>
+    <div class="topbar-actions" id="topbar-actions"></div>
+  </div>
+  <div class="content" id="content">
+    <!-- VIEWS RENDERED HERE -->
+  </div>
+</div>
+
+<!-- SETTINGS MODAL -->
+<div class="modal-overlay hidden" id="settings-modal">
+  <div class="modal">
+    <div class="modal-title">⚙️ Settings</div>
+    <div class="modal-sub">Keys saved in your browser only. Never shared.</div>
+    <div class="field">
+      <label>Groq API Key (Script Agent)</label>
+      <input type="password" id="s-apikey" placeholder="gsk_..." />
+    </div>
+    <div class="field">
+      <label>Gemini Key — Account 1 · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="31524443585e444243505c501f5e5757585258505d71565c50585d1f525e5c">[email&#160;protected]</a></label>
+      <input type="password" id="s-geminikey" placeholder="AIza..." />
+    </div>
+    <div class="field">
+      <label>Gemini Key — Account 2 · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="88eae5f1bab1bbb8b8c8efe5e9e1e4a6ebe7e5">[email&#160;protected]</a></label>
+      <input type="password" id="s-geminikey2" placeholder="AIza..." />
+    </div>
+    <div class="field">
+      <label>Image Model</label>
+      <select id="s-imagen-model">
+        <option value="imagen-3.0-generate-001">Imagen 3 Pro (Nano Banana Pro — best quality)</option>
+        <option value="imagen-2.0-generate-001">Imagen 2 (Nano Banana 2 — faster)</option>
+      </select>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeSettings()">Cancel</button>
+      <button class="btn btn-primary" onclick="saveSettings()">💾 Save Settings</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMAGE VIEWER MODAL -->
+<div class="modal-overlay hidden" id="img-modal" onclick="this.classList.add('hidden')">
+  <img class="img-viewer" id="img-modal-img" src="" alt="Scene Image" />
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+// ═══════════════════════════════════════
+// STATE & STORAGE
+// ═══════════════════════════════════════
+let state = {
+  view: 'dashboard',
+  episodes: [],
+  currentEpId: null,
+  generatingScript: false,
+  generatingImages: {},
+  geminiKey: '',
+  geminiKey2: '',
+  activeImageAccount: 1,
+  imgCount1: 0,
+  imgCount2: 0,
+  imagenModel: 'imagen-3.0-generate-001',
+};
+
+function loadState() {
+  try {
+    const eps = localStorage.getItem('cr_episodes');
+    if (eps) state.episodes = JSON.parse(eps);
+    const s = getSettings();
+    state.geminiKey = s.geminiKey || '';
+    state.geminiKey2 = s.geminiKey2 || '';
+    state.activeImageAccount = parseInt(s.activeImageAccount || '1');
+    state.imgCount1 = parseInt(s.imgCount1 || '0');
+    state.imgCount2 = parseInt(s.imgCount2 || '0');
+    state.imagenModel = s.imagenModel || 'imagen-3.0-generate-001';
+  } catch(e) {}
+}
+
+function saveEpisodes() {
+  localStorage.setItem('cr_episodes', JSON.stringify(state.episodes));
+  updateLibCount();
+}
+
+function getSettings() {
+  try {
+    return JSON.parse(localStorage.getItem('cr_settings') || '{}');
+  } catch(e) { return {}; }
+}
+
+function updateLibCount() {
+  const el = document.getElementById('lib-count');
+  if (el) el.textContent = state.episodes.length;
+}
+
+// ═══════════════════════════════════════
+// INDEXEDDB (IMAGES)
+// ═══════════════════════════════════════
+let db = null;
+function openDB() {
+  return new Promise((resolve, reject) => {
+    if (db) return resolve(db);
+    const req = indexedDB.open('CuriousRamaDB', 1);
+    req.onupgradeneeded = (e) => {
+      const d = e.target.result;
+      if (!d.objectStoreNames.contains('images')) {
+        d.createObjectStore('images', { keyPath: 'id' });
+      }
+    };
+    req.onsuccess = (e) => { db = e.target.result; resolve(db); };
+    req.onerror = () => reject(req.error);
+  });
+}
+async function saveImageDB(id, base64) {
+  const d = await openDB();
+  return new Promise((resolve, reject) => {
+    const tx = d.transaction('images', 'readwrite');
+    tx.objectStore('images').put({ id, data: base64, ts: Date.now() });
+    tx.oncomplete = resolve;
+    tx.onerror = () => reject(tx.error);
+  });
+}
+async function getImageDB(id) {
+  const d = await openDB();
+  return new Promise((resolve) => {
+    const tx = d.transaction('images', 'readonly');
+    const req = tx.objectStore('images').get(id);
+    req.onsuccess = () => resolve(req.result?.data || null);
+    req.onerror = () => resolve(null);
+  });
+}
+async function getAllImageKeys() {
+  const d = await openDB();
+  return new Promise((resolve) => {
+    const tx = d.transaction('images', 'readonly');
+    const req = tx.objectStore('images').getAllKeys();
+    req.onsuccess = () => resolve(req.result || []);
+    req.onerror = () => resolve([]);
+  });
+}
+
+// ═══════════════════════════════════════
+// CHARACTER & LOCATION LOCKS
+// ═══════════════════════════════════════
+const CHAR_LOCKS = {
+  Rama: "10-year-old girl, long wavy orange-red hair shoulder-length, large expressive brown eyes, freckles on nose and cheeks, blue denim overalls, yellow t-shirt underneath, light skin, warm curious expression",
+  Lily: "small tuxedo kitten, black body and head, white chest and paws, bright vivid green eyes, pink nose, long white whiskers",
+  Spina: "small turtle, bright green head and limbs, brown shell with green swirl scroll pattern, large dark friendly round eyes, small smile",
+  Mother: "woman with short brown bob hair, light skin with freckles, warm light green long-sleeve top, gentle warm smile, seated",
+  Father: "man with short dark brown slightly wavy hair, olive sage green casual shirt sleeves rolled up, strong jaw, warm eyes, light skin, seated"
+};
+const LOC_LOCKS = {
+  bedroom: "cozy child bedroom, warm golden sunset lighting through large window, colorful patchwork quilt bed with pink yellow blue green patches, animal drawings taped to wall, warm honey-oak wooden furniture, clear glass aquarium on dresser left side",
+  kitchen: "farmhouse kitchen, sage green painted cabinets, large rectangular oak dining table, warm natural sunlight through windows, rustic warm tones",
+  garden: "lush green garden, warm daylight, colorful flowers, grass, trees in background, warm sunlight",
+  outside: "outdoor nature setting, warm daylight, green trees, blue sky with soft clouds, warm sunlight",
+  park: "public park with green grass, trees, park benches, warm daylight, blue sky, children's play area in background"
+};
+const STYLE_SUFFIX = "Pixar 3D CGI animation style, children educational animation, warm color palette, cinematic lighting, high quality render, 9:16 aspect ratio.";
+
+function buildImagePrompt(scene) {
+  const chars = (scene.characters || []).map(c => CHAR_LOCKS[c]).filter(Boolean);
+  const loc = LOC_LOCKS[scene.location] || LOC_LOCKS.outside;
+  const hint = scene.imagePromptHint || scene.action || '';
+  return `${chars.join('. ')}. ${loc}. Scene: ${hint}. ${STYLE_SUFFIX}`;
+}
+
+// ═══════════════════════════════════════
+// GEMINI API
+// ═══════════════════════════════════════
+async function callGemini(prompt) {
+  const s = getSettings();
+  if (!s.apiKey) throw new Error("No Groq API key. Go to Settings.");
+  const res = await fetch("https://api.groq.com/openai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + s.apiKey
+    },
+    body: JSON.stringify({
+      model: "llama-3.3-70b-versatile",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.8,
+      max_tokens: 8192
+    })
+  });
+  if (!res.ok) {
+    const err = await res.json();
+    throw new Error(err.error?.message || "HTTP " + res.status);
+  }
+  const data = await res.json();
+  return data.choices?.[0]?.message?.content || "";
+}
+
+// ═══════════════════════════════════════
+// IMAGE API — Google Flow / Imagen (Nano Banana 2 & Pro)
+// Endpoint: generativelanguage.googleapis.com (browser-side, AIza key)
+// 20 free images per account — use Account 1 then switch to Account 2
+// ═══════════════════════════════════════
+function getActiveImageKey() {
+  return state.activeImageAccount === 2 ? state.geminiKey2 : state.geminiKey;
+}
+function saveImageCounts() {
+  const s = getSettings();
+  s.imgCount1 = String(state.imgCount1);
+  s.imgCount2 = String(state.imgCount2);
+  s.activeImageAccount = String(state.activeImageAccount);
+  localStorage.setItem('cr_settings', JSON.stringify(s));
+}
+async function callImagen(prompt) {
+  const key = getActiveImageKey();
+  if (!key) {
+    const acct = state.activeImageAccount;
+    throw new Error(`No Gemini key for Account ${acct}. Add it in Settings.`);
+  }
+  const model = state.imagenModel || 'imagen-3.0-generate-001';
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:predict?key=${key}`;
+  const body = {
+    instances: [{ prompt: prompt }],
+    parameters: { sampleCount: 1, aspectRatio: '9:16' }
+  };
+  const res = await fetch(url, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({}));
+    const msg = err?.error?.message || 'HTTP ' + res.status;
+    if (res.status === 429 || msg.toLowerCase().includes('quota') || msg.toLowerCase().includes('limit')) {
+      throw new Error(`QUOTA_EXCEEDED: Account ${state.activeImageAccount} quota reached. Switch account.`);
+    }
+    throw new Error('Imagen error: ' + msg);
+  }
+  const data = await res.json();
+  const pred = data?.predictions?.[0];
+  if (!pred?.bytesBase64Encoded) throw new Error('No image in Imagen response');
+  // Increment counter for active account
+  if (state.activeImageAccount === 2) { state.imgCount2++; } else { state.imgCount1++; }
+  saveImageCounts();
+  const mime = pred.mimeType || 'image/png';
+  return `data:${mime};base64,${pred.bytesBase64Encoded}`;
+}
+
+// ═══════════════════════════════════════
+// SCRIPT GENERATION
+// ═══════════════════════════════════════
+const SCRIPT_SYSTEM = `You are the script writer for "Curious Rama", a children's educational YouTube channel for ages 6-10.
+
+BRAND VOICE: Warm, curious, adventurous. Life lesson lands through EXPERIENCE not lecture. No villains. Conflict comes from nature or challenge. Rama learns by doing, failing, and trying again.
+
+LOCKED CHARACTERS:
+- Rama: curious 10-year-old girl, orange-red wavy hair, freckles, blue overalls, yellow t-shirt
+- Lily: small black-and-white tuxedo kitten
+- Spina: small turtle with swirl-patterned shell, lives in glass tank
+- Mother: short brown bob, light green top, warm and caring
+- Father: dark brown hair, olive shirt, wise and calm
+
+SCRIPT RULES:
+1. Exactly 20 scenes, each ~6 seconds = 2 minutes total
+2. Max 12 words per dialogue line, ZERO apostrophes
+3. One clear visual action per scene
+4. Life lesson felt through story experience, never stated directly until end
+5. Characters: use only the locked characters above
+6. Locations: bedroom, kitchen, garden, or outside
+
+OUTPUT: Valid JSON ONLY. No markdown. No explanation. No code fences.
+
+{
+  "title": "Episode title with one emoji",
+  "lesson": "One sentence life lesson",
+  "theme": "main theme",
+  "scenes": [
+    {
+      "id": 1,
+      "location": "bedroom",
+      "characters": ["Rama"],
+      "action": "Rama sits at desk looking at drawing, tilts head",
+      "dialogue": { "character": "Rama", "line": "This does not look right at all" },
+      "imagePromptHint": "Rama at wooden desk, drawing paper, sunset light"
+    }
+  ]
+}`;
+
+async function generateScript(theme, lesson, epNum) {
+  const prompt = `${SCRIPT_SYSTEM}\n\nEpisode Number: ${epNum}\nTheme: ${theme}\nLife Lesson: ${lesson}\n\nGenerate the complete 20-scene script now:`;
+  const raw = await callGemini(prompt);
+  // Clean response
+  let clean = raw.trim();
+  clean = clean.replace(/^```json\s*/i, '').replace(/^```\s*/i, '').replace(/```\s*$/i, '');
+  const json = JSON.parse(clean);
+  return json;
+}
+
+// ═══════════════════════════════════════
+// VIDEO PROMPT GENERATION
+// ═══════════════════════════════════════
+function buildGrokBatch(scenes, epNum) {
+  // Scene Lock header
+  return scenes.map(scene => {
+    const charDescs = (scene.characters || []).map(c => {
+      const d = { 
+        Rama: 'orange-red wavy hair, blue overalls, yellow shirt, freckles, 10-year-old girl',
+        Lily: 'tuxedo kitten, black and white, green eyes',
+        Spina: 'small green turtle, swirl-patterned shell',
+        Mother: 'short brown bob hair, light green top',
+        Father: 'dark brown hair, olive shirt'
+      };
+      return `${c}: ${d[c] || c}`;
+    }).join(' | ');
+    
+    const loc = scene.location;
+    const locDesc = {
+      bedroom: 'warm golden bedroom, patchwork quilt bed, animal drawings on wall',
+      kitchen: 'farmhouse kitchen, sage green cabinets, large oak table',
+      garden: 'lush green garden, warm daylight, flowers',
+      outside: 'outdoor nature setting, warm sunlight, trees'
+    }[loc] || 'warm outdoor setting';
+
+    const dialogue = scene.dialogue?.line 
+      ? `\n[DIALOGUE: ${scene.dialogue.character} says: "${scene.dialogue.line}"]`
+      : '';
+
+    return `=== EP${String(epNum).padStart(2,'0')} S${String(scene.id).padStart(2,'0')} ===
+[SCENE LOCK — Characters must match exactly]
+${charDescs}
+
+Location: ${locDesc}
+Action: ${scene.action}${dialogue}
+Style: Pixar 3D CGI, warm color palette, children animation, 6 seconds, smooth motion
+Aspect: 9:16
+---`;
+  }).join('\n\n');
+}
+
+// ═══════════════════════════════════════
+// UI UTILITIES
+// ═══════════════════════════════════════
+function showView(view) {
+  state.view = view;
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  const navEl = document.getElementById(`nav-${view}`);
+  if (navEl) navEl.classList.add('active');
+  renderView(view);
+}
+
+function flash(msg) {
+  const el = document.createElement('div');
+  el.className = 'copy-flash';
+  el.textContent = msg;
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 2000);
+}
+
+function copyText(text) {
+  navigator.clipboard.writeText(text).then(() => flash('✓ Copied to clipboard'));
+}
+
+function openImageViewer(src) {
+  document.getElementById('img-modal-img').src = src;
+  document.getElementById('img-modal').classList.remove('hidden');
+}
+
+function setTopbar(title, sub, actions = '') {
+  document.getElementById('topbar-title').textContent = title;
+  document.getElementById('topbar-sub').textContent = sub;
+  document.getElementById('topbar-actions').innerHTML = actions;
+}
+
+// ═══════════════════════════════════════
+// VIEWS
+// ═══════════════════════════════════════
+function renderView(view) {
+  const c = document.getElementById('content');
+  const views = {
+    dashboard: renderDashboard,
+    script: renderScript,
+    images: renderImages,
+    prompts: renderPrompts,
+    library: renderLibrary,
+    characters: renderCharacters,
+  };
+  const fn = views[view];
+  if (fn) fn(c);
+}
+
+// ─── DASHBOARD ──────────────────────────
+function renderDashboard(c) {
+  setTopbar('Dashboard', 'Curious Rama Production Studio');
+  const eps = state.episodes;
+  const totalScenes = eps.reduce((a, e) => a + (e.scenes?.length || 0), 0);
+  
+  // Count images stored
+  getAllImageKeys().then(keys => {
+    document.getElementById('img-count-val').textContent = keys.length;
+  });
+
+  c.innerHTML = `
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-val">${eps.length}</div>
+        <div class="stat-label">Episodes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">${totalScenes}</div>
+        <div class="stat-label">Scenes</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val" id="img-count-val">…</div>
+        <div class="stat-label">Images Saved</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-val">${eps.length * 3}</div>
+        <div class="stat-label">Grok Batches</div>
+      </div>
+    </div>
+
+    ${!getSettings().apiKey ? `
+    <div class="alert alert-warn">
+      ⚠️ No API key set. <button class="btn btn-sm btn-secondary" onclick="openSettings()" style="margin-left:8px">Set API Key</button>
+    </div>` : ''}
+
+    <div class="two-col">
+      <div class="card" style="cursor:pointer" onclick="showView('script')">
+        <div style="font-size:32px;margin-bottom:12px">📝</div>
+        <div class="card-title">Script Agent</div>
+        <div class="card-sub" style="margin-top:6px">Enter theme + lesson. Gemini generates your complete 20-scene script instantly.</div>
+      </div>
+      <div class="card" style="cursor:pointer" onclick="showView('images')">
+        <div style="font-size:32px;margin-bottom:12px">🖼️</div>
+        <div class="card-title">Image Agent</div>
+        <div class="card-sub" style="margin-top:6px">Flow / Imagen 3 Pro · 20 free per account · Dual account support.</div>
+      </div>
+      <div class="card" style="cursor:pointer" onclick="showView('prompts')">
+        <div style="font-size:32px;margin-bottom:12px">🎬</div>
+        <div class="card-title">Video Prompts</div>
+        <div class="card-sub" style="margin-top:6px">3 Grok batches ready to paste. Scene Lock included in every prompt.</div>
+      </div>
+      <div class="card" style="cursor:pointer" onclick="showView('library')">
+        <div style="font-size:32px;margin-bottom:12px">📚</div>
+        <div class="card-title">Library</div>
+        <div class="card-sub" style="margin-top:6px">All your episodes, scripts, images and prompts. Growing resource with every episode.</div>
+      </div>
+    </div>
+
+    ${eps.length > 0 ? `
+    <div style="margin-top:24px">
+      <div class="card-title" style="margin-bottom:14px">Recent Episodes</div>
+      <div class="ep-grid">
+        ${eps.slice(-3).reverse().map(ep => renderEpCard(ep)).join('')}
+      </div>
+    </div>` : `
+    <div class="card" style="text-align:center;padding:40px 20px;margin-top:24px">
+      <div style="font-size:40px;margin-bottom:12px">🚀</div>
+      <div class="card-title">Ready to create Episode 1?</div>
+      <div class="card-sub" style="margin-top:8px;margin-bottom:20px">Start with the Script Agent. Enter your theme and life lesson.</div>
+      <button class="btn btn-primary" onclick="showView('script')">Start Script Agent →</button>
+    </div>`}
+  `;
+}
+
+function renderEpCard(ep) {
+  const imgCount = (ep.scenes || []).filter(s => s.hasImage).length;
+  return `<div class="ep-card" onclick="showView('library');setTimeout(()=>openEpisode('${ep.id}'),100)">
+    <div class="ep-card-num">Episode ${ep.epNum || '?'} · ${new Date(ep.created).toLocaleDateString()}</div>
+    <div class="ep-card-title">${ep.title || 'Untitled'}</div>
+    <div class="ep-card-lesson">"${ep.lesson || ''}"</div>
+    <div class="ep-card-stats">
+      <span class="status-tag tag-ep">${ep.scenes?.length || 0} scenes</span>
+      ${imgCount > 0 ? `<span class="status-tag tag-done">🖼️ ${imgCount} images</span>` : ''}
+    </div>
+  </div>`;
+}
+
+// ─── SCRIPT AGENT ───────────────────────
+function renderScript(c) {
+  setTopbar('Script Agent', 'Groq Llama 3.3 → 20 scenes in seconds');
+  const nextEpNum = (state.episodes.length > 0 
+    ? Math.max(...state.episodes.map(e => e.epNum || 0)) + 1 
+    : 1);
+
+  c.innerHTML = `
+    <div class="two-col">
+      <div>
+        <div class="card">
+          <div class="card-header">
+            <div>
+              <div class="card-title">Generate New Script</div>
+              <div class="card-sub">Episode ${nextEpNum}</div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Episode Theme</label>
+            <input type="text" id="sc-theme" placeholder="e.g. Making new friends at the park" />
+          </div>
+          <div class="field">
+            <label>Life Lesson</label>
+            <input type="text" id="sc-lesson" placeholder="e.g. Being kind opens the door to friendship" />
+          </div>
+          <div class="field">
+            <label>Episode Number</label>
+            <input type="number" id="sc-epnum" value="${nextEpNum}" min="1" />
+          </div>
+          <button class="btn btn-primary" id="sc-gen-btn" onclick="runScriptGen()">
+            ✨ Generate Script with Gemini
+          </button>
+        </div>
+
+        <div class="card" id="sc-status-card" style="display:none">
+          <div id="sc-status-content"></div>
+        </div>
+      </div>
+
+      <div id="sc-output-col">
+        <div class="card" style="text-align:center;padding:40px 20px;color:var(--text-dim)">
+          <div style="font-size:36px;margin-bottom:12px">📝</div>
+          <div style="font-weight:700">Script will appear here</div>
+          <div style="font-size:12px;margin-top:6px">Enter theme + lesson and click Generate</div>
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+async function runScriptGen() {
+  const theme = document.getElementById('sc-theme')?.value?.trim();
+  const lesson = document.getElementById('sc-lesson')?.value?.trim();
+  const epNum = parseInt(document.getElementById('sc-epnum')?.value || '1');
+  if (!theme || !lesson) { flash('❌ Enter theme and lesson'); return; }
+  
+  const btn = document.getElementById('sc-gen-btn');
+  const statusCard = document.getElementById('sc-status-card');
+  const statusContent = document.getElementById('sc-status-content');
+  
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Generating...';
+  statusCard.style.display = 'block';
+  statusContent.innerHTML = `<div class="alert alert-info">🤖 Gemini is writing your 20-scene script…</div>`;
+
+  try {
+    const script = await generateScript(theme, lesson, epNum);
+    
+    // Create episode
+    const ep = {
+      id: `ep_${Date.now()}`,
+      epNum,
+      title: script.title,
+      lesson: script.lesson,
+      theme: script.theme || theme,
+      scenes: script.scenes,
+      created: Date.now(),
+    };
+    state.episodes.push(ep);
+    state.currentEpId = ep.id;
+    saveEpisodes();
+
+    statusContent.innerHTML = `<div class="alert alert-info" style="background:rgba(92,187,122,0.1);border-color:var(--green);color:var(--green)">✅ Script generated! Saved to library.</div>`;
+    renderScriptOutput(ep);
+    
+  } catch(e) {
+    statusContent.innerHTML = `<div class="alert alert-err">❌ ${e.message}</div>`;
+  }
+  
+  btn.disabled = false;
+  btn.innerHTML = '✨ Generate Script with Gemini';
+}
+
+function renderScriptOutput(ep) {
+  const col = document.getElementById('sc-output-col');
+  if (!col) return;
+  col.innerHTML = `
+    <div class="card">
+      <div class="card-header">
+        <div>
+          <div class="card-title">${ep.title}</div>
+          <div class="card-sub" style="font-style:italic;margin-top:4px">"${ep.lesson}"</div>
+        </div>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-teal btn-sm" onclick="showView('images')">🖼️ Images →</button>
+          <button class="btn btn-secondary btn-sm" onclick="showView('prompts')">🎬 Prompts →</button>
+        </div>
+      </div>
+      ${(ep.scenes || []).map(s => `
+        <div class="scene-item">
+          <div class="scene-num">${s.id}</div>
+          <div class="scene-body">
+            <div class="scene-location">📍 ${s.location} · ${(s.characters||[]).join(', ')}</div>
+            <div class="scene-action">${s.action}</div>
+            <div class="scene-dialogue"><span class="scene-speaker">${s.dialogue?.character || ''}:</span>"${s.dialogue?.line || ''}"</div>
+          </div>
+          <div class="scene-actions">
+            <div class="img-placeholder">🖼️</div>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// ─── IMAGE AGENT ────────────────────────
+function renderImages(c) {
+  const modelLabel = (state.imagenModel === 'imagen-3.0-generate-001') ? 'Imagen 3 Pro (Nano Banana Pro)' : 'Imagen 2 (Nano Banana 2)';
+  setTopbar('Image Agent', `Flow · ${modelLabel} · Dual Account`);
+  const eps = state.episodes;
+  
+  if (eps.length === 0) {
+    c.innerHTML = `<div class="alert alert-warn">⚠️ No episodes yet. Generate a script first.</div>`;
+    return;
+  }
+
+  const selEpId = state.currentEpId || eps[eps.length-1].id;
+  const ep = eps.find(e => e.id === selEpId) || eps[eps.length-1];
+  
+  const a1 = state.imgCount1;
+  const a2 = state.imgCount2;
+  const active = state.activeImageAccount;
+  const key1ok = !!state.geminiKey;
+  const key2ok = !!state.geminiKey2;
+
+  c.innerHTML = `
+    <!-- ACCOUNT SWITCHER BAR -->
+    <div class="card" style="margin-bottom:12px;padding:14px 16px">
+      <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap">
+        <div style="font-size:12px;font-weight:700;color:var(--text-dim);text-transform:uppercase;letter-spacing:.05em">Flow Accounts</div>
+        
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:2px solid ${active===1?'var(--teal)':'var(--border)'};background:${active===1?'rgba(0,206,209,.08)':'transparent'};cursor:pointer" onclick="switchImageAccount(1)">
+          <div style="font-size:11px;font-weight:700;color:${key1ok?'var(--text)':'var(--danger)'}">
+            ${key1ok ? '🔑' : '⚠️'} Acct 1 · curious.official${active===1?' · ACTIVE':''}
+          </div>
+          <div style="font-size:18px;font-weight:800;color:${a1>=18?'var(--danger)':a1>=15?'#f59e0b':'var(--teal)'}">${a1}</div>
+          <div style="font-size:10px;color:var(--text-dim)">/20</div>
+          ${a1 > 0 ? `<button onclick="event.stopPropagation();resetImageCount(1)" style="font-size:10px;padding:2px 6px;border:1px solid var(--border);border-radius:4px;background:transparent;color:var(--text-dim);cursor:pointer">reset</button>` : ''}
+        </div>
+
+        <div style="color:var(--text-faint);font-size:16px">→</div>
+
+        <div style="display:flex;align-items:center;gap:8px;padding:8px 14px;border-radius:8px;border:2px solid ${active===2?'var(--teal)':'var(--border)'};background:${active===2?'rgba(0,206,209,.08)':'transparent'};cursor:pointer" onclick="switchImageAccount(2)">
+          <div style="font-size:11px;font-weight:700;color:${key2ok?'var(--text)':'var(--danger)'}">
+            ${key2ok ? '🔑' : '⚠️'} Acct 2 · bmy29300${active===2?' · ACTIVE':''}
+          </div>
+          <div style="font-size:18px;font-weight:800;color:${a2>=18?'var(--danger)':a2>=15?'#f59e0b':'var(--teal)'}">${a2}</div>
+          <div style="font-size:10px;color:var(--text-dim)">/20</div>
+          ${a2 > 0 ? `<button onclick="event.stopPropagation();resetImageCount(2)" style="font-size:10px;padding:2px 6px;border:1px solid var(--border);border-radius:4px;background:transparent;color:var(--text-dim);cursor:pointer">reset</button>` : ''}
+        </div>
+
+        ${!key2ok ? `<button class="btn btn-sm btn-secondary" onclick="openSettings()">+ Add Account 2 Key</button>` : ''}
+      </div>
+      ${(active===1 && a1 >= 20) ? `<div class="alert alert-warn" style="margin-top:10px;margin-bottom:0">⚠️ Account 1 is full (20/20). Click Account 2 to continue.</div>` : ''}
+      ${(active===2 && a2 >= 20) ? `<div class="alert alert-warn" style="margin-top:10px;margin-bottom:0">⚠️ Account 2 is full (20/20). Both accounts used. New session needed.</div>` : ''}
+    </div>
+
+    <div class="card">
+      <div class="card-header">
+        <div class="field" style="margin:0;min-width:280px">
+          <label>Select Episode</label>
+          <select id="img-ep-select" onchange="state.currentEpId=this.value;renderView('images')">
+            ${eps.map(e => `<option value="${e.id}" ${e.id===ep.id?'selected':''}>${e.epNum ? 'EP'+String(e.epNum).padStart(2,'0')+' — ' : ''}${e.title}</option>`).join('')}
+          </select>
+        </div>
+        <div style="display:flex;gap:8px;align-items:flex-end">
+          <button class="btn btn-primary" onclick="genAllImages('${ep.id}')">🚀 Generate All</button>
+        </div>
+      </div>
+      <div class="alert alert-info">
+        🔒 Characters locked. Prompts include Rama, Lily, Spina, Mother and Father exact descriptions automatically.
+      </div>
+    </div>
+
+    <div id="img-scene-list">
+      ${(ep.scenes || []).map(s => `
+        <div class="scene-item" id="img-scene-${ep.id}-${s.id}">
+          <div class="scene-num">${s.id}</div>
+          <div class="scene-body">
+            <div class="scene-location">📍 ${s.location} · ${(s.characters||[]).join(', ')}</div>
+            <div class="scene-action">${s.action}</div>
+            <div class="scene-dialogue"><span class="scene-speaker">${s.dialogue?.character||''}:</span>"${s.dialogue?.line||''}"</div>
+            <div style="margin-top:8px;font-size:11px;color:var(--text-faint);font-family:'Space Mono',monospace;line-height:1.5">
+              ${buildImagePrompt(s).substring(0, 120)}…
+            </div>
+          </div>
+          <div class="scene-actions" id="img-actions-${ep.id}-${s.id}">
+            <div id="img-thumb-${ep.id}-${s.id}">
+              <div class="img-placeholder">🖼️</div>
+            </div>
+            <button class="btn btn-sm btn-teal" onclick="genSceneImage('${ep.id}',${s.id})" id="img-btn-${ep.id}-${s.id}">Generate</button>
+          </div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+  
+  // Load existing images
+  (ep.scenes || []).forEach(s => {
+    if (s.hasImage) loadThumbDisplay(ep.id, s.id);
+  });
+}
+
+function switchImageAccount(to) {
+  state.activeImageAccount = to;
+  saveImageCounts();
+  flash(`✅ Switched to Account ${to}`);
+  renderView('images');
+}
+function resetImageCount(acct) {
+  if (acct === 1) { state.imgCount1 = 0; } else { state.imgCount2 = 0; }
+  saveImageCounts();
+  flash(`🔄 Account ${acct} counter reset to 0`);
+  renderView('images');
+}
+async function loadThumbDisplay(epId, sceneId) {
+  const imgId = `${epId}_s${sceneId}`;
+  const data = await getImageDB(imgId);
+  if (data) {
+    const thumbEl = document.getElementById(`img-thumb-${epId}-${sceneId}`);
+    const btnEl = document.getElementById(`img-btn-${epId}-${sceneId}`);
+    if (thumbEl) {
+      thumbEl.innerHTML = `<img class="img-thumb" src="${data}" onclick="openImageViewer('${data}')" style="cursor:pointer" />`;
+    }
+    if (btnEl) { btnEl.textContent = '🔄 Re-gen'; btnEl.className = 'btn btn-xs btn-secondary'; }
+  }
+
+async function genSceneImage(epId, sceneId) {
+  const ep = state.episodes.find(e => e.id === epId);
+  if (!ep) return;
+  const scene = ep.scenes?.find(s => s.id === sceneId);
+  if (!scene) return;
+  
+  const btn = document.getElementById(`img-btn-${epId}-${sceneId}`);
+  const thumbEl = document.getElementById(`img-thumb-${epId}-${sceneId}`);
+  if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner"></span>'; }
+  if (thumbEl) thumbEl.innerHTML = `<div class="img-placeholder"><span class="spinner"></span></div>`;
+
+  try {
+    const prompt = buildImagePrompt(scene);
+    const imgData = await callImagen(prompt);
+    
+    // Save to IndexedDB
+    const imgId = `${epId}_s${sceneId}`;
+    await saveImageDB(imgId, imgData);
+    
+    // Update scene metadata
+    scene.hasImage = true;
+    saveEpisodes();
+    
+    // Update UI
+    if (thumbEl) thumbEl.innerHTML = `<img class="img-thumb" src="${imgData}" onclick="openImageViewer('${imgData}')" style="cursor:pointer" />`;
+    if (btn) { btn.disabled = false; btn.textContent = '🔄 Re-gen'; btn.className = 'btn btn-xs btn-secondary'; }
+    
+    flash(`✅ Scene ${sceneId} image saved`);
+  } catch(e) {
+    if (thumbEl) thumbEl.innerHTML = `<div class="img-placeholder" title="${e.message}">❌</div>`;
+    if (btn) { btn.disabled = false; btn.textContent = 'Retry'; }
+    if (e.message.startsWith('QUOTA_EXCEEDED')) {
+      // Auto-switch to account 2 if account 1 is full
+      if (state.activeImageAccount === 1 && state.geminiKey2) {
+        state.activeImageAccount = 2;
+        saveImageCounts();
+        flash(`⚡ Account 1 full — switched to Account 2 automatically`);
+        renderView('images');
+      } else {
+        flash(`❌ Both accounts full. Add new key in Settings.`);
+      }
+    } else {
+      flash(`❌ ${e.message.substring(0,60)}`);
+    }
+  }
+}
+
+async function genAllImages(epId) {
+  const ep = state.episodes.find(e => e.id === epId);
+  if (!ep || !ep.scenes) return;
+  
+  const btn = document.querySelector('[onclick*="genAllImages"]');
+  if (btn) { btn.disabled = true; btn.innerHTML = '⏳ Generating…'; }
+  
+  const scenes = ep.scenes.filter(s => !s.hasImage);
+  for (const s of scenes) {
+    await genSceneImage(epId, s.id);
+    await new Promise(r => setTimeout(r, 2000)); // 2s between Gemini image calls
+  }
+  
+  if (btn) { btn.disabled = false; btn.innerHTML = '🚀 Generate All'; }
+  flash(`✅ All images done!`);
+}
+
+// ─── VIDEO PROMPTS ───────────────────────
+function renderPrompts(c) {
+  setTopbar('Video Prompts', '3 Grok Batches · Scene Lock Included · Ready to Paste');
+  const eps = state.episodes;
+  
+  if (eps.length === 0) {
+    c.innerHTML = `<div class="alert alert-warn">⚠️ No episodes yet. Generate a script first.</div>`;
+    return;
+  }
+
+  const selEpId = state.currentEpId || eps[eps.length-1].id;
+  const ep = eps.find(e => e.id === selEpId) || eps[eps.length-1];
+  const scenes = ep.scenes || [];
+  
+  const batch1 = scenes.slice(0, 7);
+  const batch2 = scenes.slice(7, 14);
+  const batch3 = scenes.slice(14, 20);
+  
+  const b1text = buildGrokBatch(batch1, ep.epNum || 1);
+  const b2text = buildGrokBatch(batch2, ep.epNum || 1);
+  const b3text = buildGrokBatch(batch3, ep.epNum || 1);
+
+  c.innerHTML = `
+    <div class="card" style="margin-bottom:16px">
+      <div class="field" style="margin:0;max-width:320px">
+        <label>Select Episode</label>
+        <select onchange="state.currentEpId=this.value;renderView('prompts')">
+          ${eps.map(e => `<option value="${e.id}" ${e.id===ep.id?'selected':''}>${e.epNum ? 'EP'+String(e.epNum).padStart(2,'0')+' — ' : ''}${e.title}</option>`).join('')}
+        </select>
+      </div>
+    </div>
+
+    <div class="alert alert-info">
+      🎬 Open 3 Grok tabs. Paste one batch per tab. Download videos. Merge in CapCut.
+    </div>
+
+    <div class="tab-row">
+      <button class="tab-btn active" onclick="showPromptTab(this,'pt1')" id="ptab1">Grok Account 1 · S1–S7</button>
+      <button class="tab-btn" onclick="showPromptTab(this,'pt2')" id="ptab2">Grok Account 2 · S8–S14</button>
+      <button class="tab-btn" onclick="showPromptTab(this,'pt3')" id="ptab3">Grok Account 3 · S15–S20</button>
+    </div>
+
+    <div id="pt1">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+        <button class="btn btn-teal btn-sm" onclick="copyText(${JSON.stringify(b1text)})">📋 Copy Batch 1</button>
+      </div>
+      <div class="batch-box">${escHtml(b1text)}</div>
+    </div>
+    <div id="pt2" class="hidden">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+        <button class="btn btn-teal btn-sm" onclick="copyText(${JSON.stringify(b2text)})">📋 Copy Batch 2</button>
+      </div>
+      <div class="batch-box">${escHtml(b2text)}</div>
+    </div>
+    <div id="pt3" class="hidden">
+      <div style="display:flex;justify-content:flex-end;margin-bottom:8px">
+        <button class="btn btn-teal btn-sm" onclick="copyText(${JSON.stringify(b3text)})">📋 Copy Batch 3</button>
+      </div>
+      <div class="batch-box">${escHtml(b3text)}</div>
+    </div>
+  `;
+}
+
+function showPromptTab(btn, id) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  ['pt1','pt2','pt3'].forEach(t => {
+    const el = document.getElementById(t);
+    if (el) el.classList.toggle('hidden', t !== id);
+  });
+}
+
+function escHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ─── LIBRARY ────────────────────────────
+function renderLibrary(c) {
+  setTopbar('Library', 'All episodes · Scripts · Images · Prompts · Growing with every production');
+  const eps = state.episodes;
+  
+  if (eps.length === 0) {
+    c.innerHTML = `<div class="card" style="text-align:center;padding:40px 20px">
+      <div style="font-size:36px;margin-bottom:12px">📚</div>
+      <div class="card-title">Library is empty</div>
+      <div class="card-sub" style="margin-top:6px">Episodes appear here after you generate scripts.</div>
+    </div>`;
+    return;
+  }
+
+  c.innerHTML = `
+    <div class="ep-grid" id="lib-grid">
+      ${eps.slice().reverse().map(ep => `
+        <div class="ep-card" onclick="openEpisode('${ep.id}')">
+          <div class="ep-card-num">Episode ${ep.epNum || '?'} · ${new Date(ep.created).toLocaleDateString()}</div>
+          <div class="ep-card-title">${ep.title || 'Untitled'}</div>
+          <div class="ep-card-lesson">"${ep.lesson || ''}"</div>
+          <div class="ep-card-stats">
+            <span class="status-tag tag-ep">${ep.scenes?.length || 0} scenes</span>
+            ${(ep.scenes||[]).filter(s=>s.hasImage).length > 0 ? `<span class="status-tag tag-done">🖼️ ${(ep.scenes||[]).filter(s=>s.hasImage).length} images</span>` : ''}
+          </div>
+        </div>
+      `).join('')}
+    </div>
+    <div id="lib-ep-detail" class="hidden"></div>
+  `;
+}
+
+async function openEpisode(epId) {
+  const ep = state.episodes.find(e => e.id === epId);
+  if (!ep) return;
+  
+  const c = document.getElementById('content');
+  setTopbar(ep.title || 'Episode', `EP${ep.epNum || '?'} · ${ep.scenes?.length || 0} scenes`);
+  
+  c.innerHTML = `
+    <div style="display:flex;gap:10px;margin-bottom:20px;flex-wrap:wrap">
+      <button class="btn btn-secondary btn-sm" onclick="renderView('library')">← Back to Library</button>
+      <button class="btn btn-teal btn-sm" onclick="state.currentEpId='${epId}';showView('images')">🖼️ Images Agent</button>
+      <button class="btn btn-secondary btn-sm" onclick="state.currentEpId='${epId}';showView('prompts')">🎬 Video Prompts</button>
+      <button class="btn btn-secondary btn-sm" style="margin-left:auto;color:var(--red);border-color:var(--red)" onclick="deleteEpisode('${epId}')">🗑️ Delete</button>
+    </div>
+    <div class="card" style="margin-bottom:20px">
+      <div class="card-title">${ep.title}</div>
+      <div style="font-style:italic;color:var(--orange);font-size:13px;margin-top:4px">"${ep.lesson}"</div>
+      <div style="font-size:12px;color:var(--text-dim);margin-top:8px">Theme: ${ep.theme || 'N/A'} · Created: ${new Date(ep.created).toLocaleString()}</div>
+    </div>
+    <div id="lib-scenes-container"></div>
+  `;
+  
+  const container = document.getElementById('lib-scenes-container');
+  for (const s of (ep.scenes || [])) {
+    const item = document.createElement('div');
+    item.className = 'scene-item';
+    item.id = `lib-s-${epId}-${s.id}`;
+    item.innerHTML = `
+      <div class="scene-num">${s.id}</div>
+      <div class="scene-body">
+        <div class="scene-location">📍 ${s.location} · ${(s.characters||[]).join(', ')}</div>
+        <div class="scene-action">${s.action}</div>
+        <div class="scene-dialogue"><span class="scene-speaker">${s.dialogue?.character||''}:</span>"${s.dialogue?.line||''}"</div>
+      </div>
+      <div class="scene-actions" id="lib-img-${epId}-${s.id}">
+        <div class="img-placeholder">…</div>
+      </div>
+    `;
+    container.appendChild(item);
+    
+    if (s.hasImage) {
+      const imgData = await getImageDB(`${epId}_s${s.id}`);
+      const imgContainer = document.getElementById(`lib-img-${epId}-${s.id}`);
+      if (imgContainer && imgData) {
+        imgContainer.innerHTML = `
+          <img class="img-thumb" src="${imgData}" onclick="openImageViewer('${imgData}')" style="cursor:pointer" />
+          <button class="btn btn-xs btn-secondary" onclick="downloadImage('${imgData}','EP${ep.epNum||1}_S${s.id}.png')">⬇️</button>
+        `;
+      }
+    } else {
+      const imgContainer = document.getElementById(`lib-img-${epId}-${s.id}`);
+      if (imgContainer) imgContainer.innerHTML = `<div class="img-placeholder">🖼️</div>`;
+    }
+  }
+}
+
+function downloadImage(dataUrl, filename) {
+  const a = document.createElement('a');
+  a.href = dataUrl;
+  a.download = filename;
+  a.click();
+}
+
+function deleteEpisode(epId) {
+  if (!confirm('Delete this episode? Images in library are NOT removed.')) return;
+  state.episodes = state.episodes.filter(e => e.id !== epId);
+  saveEpisodes();
+  renderView('library');
+  flash('🗑️ Episode deleted');
+}
+
+// ─── CHARACTERS ─────────────────────────
+function renderCharacters(c) {
+  setTopbar('Character Bible', 'Locked · Never Regenerated · Used in Every Prompt');
+  
+  const chars = [
+    { name: 'Rama', emoji: '👧', role: 'Main Character', desc: CHAR_LOCKS.Rama, color: '#F08C1E' },
+    { name: 'Lily', emoji: '🐱', role: 'Pet Cat', desc: CHAR_LOCKS.Lily, color: '#2BB5A0' },
+    { name: 'Spina', emoji: '🐢', role: 'Pet Turtle', desc: CHAR_LOCKS.Spina, color: '#5CBB7A' },
+    { name: 'Mother', emoji: '👩', role: 'Rama\'s Mother', desc: CHAR_LOCKS.Mother, color: '#9B7FD4' },
+    { name: 'Father', emoji: '👨', role: 'Rama\'s Father', desc: CHAR_LOCKS.Father, color: '#E07070' },
+  ];
+  const locs = [
+    { name: 'Bedroom', emoji: '🛏️', desc: LOC_LOCKS.bedroom },
+    { name: 'Kitchen', emoji: '🍳', desc: LOC_LOCKS.kitchen },
+  ];
+
+  c.innerHTML = `
+    <div class="alert alert-info" style="margin-bottom:20px">
+      🔒 All descriptions below are auto-injected into every image and video prompt. Characters are locked forever.
+    </div>
+    <div class="card-title" style="margin-bottom:14px">Characters</div>
+    <div class="two-col" style="margin-bottom:24px">
+      ${chars.map(ch => `
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+            <div style="font-size:28px">${ch.emoji}</div>
+            <div>
+              <div class="card-title">${ch.name}</div>
+              <div class="card-sub">${ch.role}</div>
+            </div>
+            <span class="status-tag tag-done" style="margin-left:auto">LOCKED</span>
+          </div>
+          <div style="font-size:12px;color:var(--text-dim);line-height:1.6;font-family:'Space Mono',monospace;background:var(--bg);padding:10px;border-radius:4px;border:1px solid var(--border)">${ch.desc}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="card-title" style="margin-bottom:14px">Locations</div>
+    <div class="two-col">
+      ${locs.map(l => `
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+            <div style="font-size:24px">${l.emoji}</div>
+            <div>
+              <div class="card-title">${l.name}</div>
+              <span class="status-tag tag-done">LOCKED</span>
+            </div>
+          </div>
+          <div style="font-size:12px;color:var(--text-dim);line-height:1.6;font-family:'Space Mono',monospace;background:var(--bg);padding:10px;border-radius:4px;border:1px solid var(--border)">${l.desc}</div>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// ═══════════════════════════════════════
+// SETTINGS
+// ═══════════════════════════════════════
+function openSettings() {
+  const s = getSettings();
+  document.getElementById('s-apikey').value = s.apiKey || '';
+  document.getElementById('s-geminikey').value = s.geminiKey || '';
+  document.getElementById('s-geminikey2').value = s.geminiKey2 || '';
+  const modelSel = document.getElementById('s-imagen-model');
+  if (modelSel) modelSel.value = s.imagenModel || 'imagen-3.0-generate-001';
+  document.getElementById('settings-modal').classList.remove('hidden');
+}
+function closeSettings() {
+  document.getElementById('settings-modal').classList.add('hidden');
+}
+function saveSettings() {
+  const apiKey = document.getElementById('s-apikey').value.trim();
+  const geminiKey = document.getElementById('s-geminikey').value.trim();
+  const geminiKey2 = document.getElementById('s-geminikey2').value.trim();
+  const imagenModel = document.getElementById('s-imagen-model').value;
+  const existing = getSettings();
+  localStorage.setItem('cr_settings', JSON.stringify({
+    apiKey, geminiKey, geminiKey2, imagenModel,
+    activeImageAccount: existing.activeImageAccount || '1',
+    imgCount1: existing.imgCount1 || '0',
+    imgCount2: existing.imgCount2 || '0'
+  }));
+  state.geminiKey = geminiKey;
+  state.geminiKey2 = geminiKey2;
+  state.imagenModel = imagenModel;
+  closeSettings();
+  flash('✅ Settings saved');
+  renderView(state.view);
+}
+
+// ═══════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════
+loadState();
+updateLibCount();
+renderView('dashboard');
+</script>
+</body>
+</html>
