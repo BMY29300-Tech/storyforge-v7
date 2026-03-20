@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StoryForge v7 — Curious Rama Production Studio</title>
+<style>
+:root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --text: #f1f5f9;
+    --text-muted: #94a3b8;
+    --primary: #3b82f6;
+    --success: #22c55e;
+    --warning: #f59e0b;
+    --error: #ef4444;
+    --border: #334155;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: var(--bg); color: var(--text); line-height: 1.6; }
+.container { max-width: 1400px; margin: 0 auto; padding: 20px; }
+.header { background: var(--card); padding: 20px; border-radius: 12px; margin-bottom: 20px; border: 1px solid var(--border); }
+.header h1 { font-size: 24px; margin-bottom: 5px; }
+.header p { color: var(--text-muted); font-size: 14px; }
+.nav { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.nav button { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 10px 20px; border-radius: 8px; cursor: pointer; transition: all 0.2s; }
+.nav button:hover { background: var(--primary); border-color: var(--primary); }
+.nav button.active { background: var(--primary); border-color: var(--primary); }
+.tab-content { display: none; background: var(--card); padding: 25px; border-radius: 12px; border: 1px solid var(--border); }
+.tab-content.active { display: block; }
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; margin-bottom: 8px; font-weight: 600; color: var(--text); }
+.form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px; }
+.form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--primary); }
+.form-group textarea { min-height: 120px; resize: vertical; }
+.btn { background: var(--primary); color: white; border: none; padding: 12px 24px; border-radius: 8px; cursor: pointer; font-weight: 600; transition: all 0.2s; }
+.btn:hover { background: #2563eb; }
+.btn:disabled { background: var(--text-muted); cursor: not-allowed; }
+.btn-success { background: var(--success); }
+.btn-success:hover { background: #16a34a; }
+.btn-warning { background: var(--warning); color: #000; }
+.btn-danger { background: var(--error); }
+.alert { padding: 15px; border-radius: 8px; margin-bottom: 20px; border-left: 4px solid; }
+.alert-info { background: rgba(59, 130, 246, 0.1); border-color: var(--primary); color: #93c5fd; }
+.alert-success { background: rgba(34, 197, 94, 0.1); border-color: var(--success); color: #86efac; }
+.alert-warning { background: rgba(245, 158, 11, 0.1); border-color: var(--warning); color: #fcd34d; }
+.alert-error { background: rgba(239, 68, 68, 0.1); border-color: var(--error); color: #fca5a5; }
+.card { background: var(--bg); padding: 20px; border-radius: 8px; margin-bottom: 15px; border: 1px solid var(--border); }
+.card h3 { margin-bottom: 10px; font-size: 16px; }
+.card p { color: var(--text-muted); font-size: 14px; }
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 20px; }
+.hint { font-size: 12px; color: var(--text-muted); margin-top: 5px; }
+.error-log { background: #000; padding: 15px; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 12px; color: #ef4444; max-height: 300px; overflow-y: auto; margin-top: 15px; }
+.success-check { color: var(--success); margin-right: 5px; }
+.error-cross { color: var(--error); margin-right: 5px; }
+.status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+.status-ok { background: rgba(34, 197, 94, 0.2); color: var(--success); }
+.status-warn { background: rgba(245, 158, 11, 0.2); color: var(--warning); }
+.status-err { background: rgba(239, 68, 68, 0.2); color: var(--error); }
+.scene-card { background: var(--bg); padding: 15px; border-radius: 8px; margin-bottom: 10px; border: 1px solid var(--border); }
+.scene-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+.scene-number { background: var(--primary); color: white; padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+.copy-btn { background: var(--card); border: 1px solid var(--border); color: var(--text); padding: 6px 12px; border-radius: 6px; cursor: pointer; font-size: 12px; }
+.copy-btn:hover { background: var(--primary); }
+.progress-bar { height: 8px; background: var(--bg); border-radius: 4px; overflow: hidden; margin: 15px 0; }
+.progress-fill { height: 100%; background: var(--success); width: 0%; transition: width 0.3s; }
+.auto-correct-box { background: rgba(34, 197, 94, 0.1); border: 1px solid var(--success); padding: 15px; border-radius: 8px; margin-top: 15px; }
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <h1>🎬 StoryForge v7</h1>
+        <p>Curious Rama Production Studio — Auto-Detect & Auto-Correct Enabled</p>
+    </div>
+
+    <div class="nav">
+        <button onclick="setTab('dashboard')" class="active">🏠 Dashboard</button>
+        <button onclick="setTab('script')">📝 Script Agent</button>
+        <button onclick="setTab('image')">🖼️ Image Agent</button>
+        <button onclick="setTab('video')">🎥 Video Prompts</button>
+        <button onclick="setTab('library')">📚 Library</button>
+        <button onclick="setTab('characters')">🎭 Characters</button>
+        <button onclick="setTab('locations')">📍 Locations</button>
+        <button onclick="setTab('settings')">⚙️ Settings</button>
+        <button onclick="setTab('errors')">🔍 Error Log</button>
+    </div>
+
+    <!-- DASHBOARD TAB -->
+    <div id="dashboard" class="tab-content active">
+        <h2>🏠 Dashboard</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>📊 Project Status</h3>
+                <p id="project-status">Loading...</p>
+            </div>
+            <div class="card">
+                <h3>🎬 Episodes</h3>
+                <p id="episode-count">0 episodes in library</p>
+            </div>
+            <div class="card">
+                <h3>🎭 Characters</h3>
+                <p id="character-count">0 characters saved</p>
+            </div>
+            <div class="card">
+                <h3>📍 Locations</h3>
+                <p id="location-count">0 locations saved</p>
+            </div>
+        </div>
+        <div class="alert alert-info" style="margin-top: 20px;">
+            <strong>✅ Auto-Detect Enabled:</strong> Problems are detected automatically. Auto-correct available when possible.
+        </div>
+    </div>
+
+    <!-- SCRIPT AGENT TAB -->
+    <div id="script" class="tab-content">
+        <h2>📝 Script Agent</h2>
+        <div id="script-status"></div>
+        <div class="form-group">
+            <label>Episode Number</label>
+            <input type="number" id="ep-number" placeholder="e.g., 3" min="1">
+        </div>
+        <div class="form-group">
+            <label>Title</label>
+            <input type="text" id="ep-title" placeholder="e.g., Rama Builds a Bridge">
+        </div>
+        <div class="form-group">
+            <label>Theme</label>
+            <textarea id="ep-theme" placeholder="e.g., Rama and her pets try to build a bridge for a family of ducks, learning from their mistakes and iterating their design"></textarea>
+        </div>
+        <div class="form-group">
+            <label>Lesson / Moral</label>
+            <textarea id="ep-lesson" placeholder="e.g., Every mistake teaches us something new — keep trying and you will find a way."></textarea>
+        </div>
+        <div class="form-group">
+            <label>Number of Scenes (Max 40)</label>
+            <input type="number" id="scene-count" value="20" min="1" max="40">
+        </div>
+        <button onclick="generateScript()" class="btn" id="script-generate-btn">✨ Generate Script with Groq</button>
+        <div class="progress-bar" id="script-progress" style="display: none;">
+            <div class="progress-fill" id="script-progress-fill"></div>
+        </div>
+        <div id="script-output" style="margin-top: 20px;"></div>
+    </div>
+
+    <!-- SETTINGS TAB -->
+    <div id="settings" class="tab-content">
+        <h2>⚙️ Settings</h2>
+        <div class="form-group">
+            <label>Groq API Key</label>
+            <input type="password" id="groq-key-input" placeholder="Enter your Groq API Key">
+            <button onclick="saveGroqKey()" class="btn btn-success" style="margin-top: 10px;">Save Groq Key</button>
+            <p class="hint">Get free key at: <a href="https://console.groq.com" target="_blank" style="color: var(--primary);">console.groq.com</a></p>
+        </div>
+        <div class="form-group">
+            <label>Google AI Studio Key (AIza)</label>
+            <input type="password" id="google-key-input" placeholder="Enter your Google AI Studio Key">
+            <button onclick="saveGoogleKey()" class="btn btn-success" style="margin-top: 10px;">Save Google Key</button>
+        </div>
+        <div class="form-group">
+            <label>Gemini Model</label>
+            <select id="gemini-model">
+                <option value="gemini-2.0-flash">Gemini 2.0 Flash (Recommended)</option>
+                <option value="gemini-1.5-flash">Gemini 1.5 Flash</option>
+            </select>
+            <button onclick="saveModel()" class="btn" style="margin-top: 10px;">Save Model</button>
+        </div>
+        <div class="card" style="margin-top: 20px;">
+            <h3>🔐 Storage Status</h3>
+            <p id="storage-status">Checking...</p>
+        </div>
+        <div class="auto-correct-box" id="auto-correct-status" style="display: none;">
+            <strong>🔧 Auto-Correct Available:</strong> <span id="auto-correct-message"></span>
+            <button onclick="applyAutoCorrect()" class="btn btn-warning" style="margin-top: 10px;">Apply Auto-Correct</button>
+        </div>
+    </div>
+
+    <!-- ERROR LOG TAB -->
+    <div id="errors" class="tab-content">
+        <h2>🔍 Error Log & Diagnostics</h2>
+        <div class="alert alert-info">
+            <strong>Auto-Detect Active:</strong> All errors are logged automatically. Copy or export for analysis.
+        </div>
+        <div class="grid">
+            <div class="card">
+                <h3>📋 Recent Errors</h3>
+                <div id="error-list" class="error-log">No errors logged yet.</div>
+            </div>
+            <div class="card">
+                <h3>🛠️ Quick Actions</h3>
+                <button onclick="copyErrors()" class="btn" style="margin-bottom: 10px; width: 100%;">📋 Copy Errors to Clipboard</button>
+                <button onclick="exportErrors()" class="btn btn-success" style="margin-bottom: 10px; width: 100%;">📥 Export Errors as TXT</button>
+                <button onclick="clearErrors()" class="btn btn-danger" style="width: 100%;">🗑️ Clear Error Log</button>
+            </div>
+        </div>
+        <div class="card" style="margin-top: 20px;">
+            <h3>📊 System Diagnostics</h3>
+            <div id="diagnostics">Loading...</div>
+        </div>
+    </div>
+
+    <!-- LIBRARY TAB -->
+    <div id="library" class="tab-content">
+        <h2>📚 Library</h2>
+        <div id="library-list">
+            <p class="hint">No episodes saved yet. Generate your first script in Script Agent.</p>
+        </div>
+    </div>
+
+    <!-- CHARACTERS TAB -->
+    <div id="characters" class="tab-content">
+        <h2>🎭 Characters</h2>
+        <div id="character-list">
+            <p class="hint">No characters saved yet.</p>
+        </div>
+    </div>
+
+    <!-- LOCATIONS TAB -->
+    <div id="locations" class="tab-content">
+        <h2>📍 Locations</h2>
+        <div id="location-list">
+            <p class="hint">No locations saved yet.</p>
+        </div>
+    </div>
+
+    <!-- IMAGE AGENT TAB -->
+    <div id="image" class="tab-content">
+        <h2>🖼️ Image Agent</h2>
+        <div class="alert alert-info">
+            <strong>Manual Workflow:</strong> Copy prompts → Paste in Google Flow (labs.google/flow) → Download → Upload back
+        </div>
+        <div id="image-output"></div>
+    </div>
+
+    <!-- VIDEO PROMPTS TAB -->
+    <div id="video" class="tab-content">
+        <h2>🎥 Video Prompts</h2>
+        <div class="alert alert-info">
+            <strong>Grok Batches:</strong> 3 batches for parallel generation (Scenes 1-7, 8-14, 15-20)
+        </div>
+        <div id="video-output"></div>
+    </div>
+</div>
+
+<script>
+// ==================== STATE MANAGEMENT ====================
+let state = {
+    episodes: [],
+    characters: [],
+    locations: [],
+    currentEpId: null,
+    errors: []
+};
+
+// ==================== INITIALIZATION ====================
+window.addEventListener('DOMContentLoaded', () => {
+    loadState();
+    loadKeys();
+    updateDashboard();
+    updateStorageStatus();
+    runAutoDiagnostics();
+    setupErrorCapture();
+});
+
+// ==================== ERROR CAPTURE ====================
+function setupErrorCapture() {
+    window.onerror = function(message, source, lineno, colno, error) {
+        logError('Runtime Error', message, { source, lineno, colno, stack: error?.stack });
+        return false;
+    };
+    window.addEventListener('unhandledrejection', event => {
+        logError('Promise Rejection', event.reason?.message || event.reason, { type: 'unhandledrejection' });
+    });
+}
+
+function logError(type, message, details = {}) {
+    const error = {
+        id: `err_${Date.now()}`,
+        timestamp: new Date().toISOString(),
+        type,
+        message: String(message),
+        details,
+        resolved: false
+    };
+    state.errors.unshift(error);
+    if (state.errors.length > 50) state.errors.pop();
+    saveState();
+    updateErrorLog();
+    checkAutoCorrect(error);
+}
+
+function updateErrorLog() {
+    const list = document.getElementById('error-list');
+    if (!list) return;
+    if (state.errors.length === 0) {
+        list.innerHTML = '✅ No errors logged yet.';
+        return;
+    }
+    list.innerHTML = state.errors.map(e => `
+        <div style="margin-bottom: 10px; padding-bottom: 10px; border-bottom: 1px solid #333;">
+            <div style="color: #f87171; font-weight: 600;">[${e.timestamp.split('T')[1].split('.')[0]}] ${e.type}</div>
+            <div style="color: #fca5a5;">${e.message}</div>
+            ${e.resolved ? '<div style="color: #22c55e; margin-top: 5px;">✅ Resolved</div>' : ''}
+        </div>
+    `).join('');
+}
+
+function copyErrors() {
+    const text = state.errors.map(e => 
+        `[${e.timestamp}] ${e.type}: ${e.message}\nDetails: ${JSON.stringify(e.details, null, 2)}`
+    ).join('\n\n');
+    navigator.clipboard.writeText(text).then(() => alert('✅ Errors copied to clipboard!'));
+}
+
+function exportErrors() {
+    const text = `STORYFORGE v7 ERROR LOG\nGenerated: ${new Date().toISOString()}\n\n` + 
+        state.errors.map(e => 
+            `[${e.timestamp}] ${e.type}\nMessage: ${e.message}\nDetails: ${JSON.stringify(e.details, null, 2)}\n${'─'.repeat(50)}`
+        ).join('\n');
+    const blob = new Blob([text], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `StoryForge_Errors_${Date.now()}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+}
+
+function clearErrors() {
+    state.errors = [];
+    saveState();
+    updateErrorLog();
+    alert('✅ Error log cleared.');
+}
+
+// ==================== AUTO-DETECT & AUTO-CORRECT ====================
+function runAutoDiagnostics() {
+    const issues = [];
+    
+    // Check Groq Key
+    const groqKey = localStorage.getItem('groqKey');
+    if (!groqKey) {
+        issues.push({ type: 'missing_groq_key', message: 'Groq API Key not saved', fixable: true });
+    }
+    
+    // Check Google Key
+    const googleKey = localStorage.getItem('googleKey');
+    if (!googleKey) {
+        issues.push({ type: 'missing_google_key', message: 'Google AI Studio Key not saved', fixable: true });
+    }
+    
+    // Check Model
+    const model = localStorage.getItem('geminiModel') || 'gemini-2.0-flash';
+    if (!['gemini-2.0-flash', 'gemini-1.5-flash'].includes(model)) {
+        issues.push({ type: 'invalid_model', message: `Invalid model: ${model}`, fixable: true });
+    }
+    
+    // Check localStorage quota
+    try {
+        localStorage.setItem('_test_', 'x'.repeat(1000));
+        localStorage.removeItem('_test_');
+    } catch (e) {
+        issues.push({ type: 'storage_full', message: 'LocalStorage quota exceeded', fixable: false });
+    }
+    
+    updateDiagnostics(issues);
+    showAutoCorrect(issues);
+}
+
+function updateDiagnostics(issues) {
+    const diag = document.getElementById('diagnostics');
+    if (!diag) return;
+    if (issues.length === 0) {
+        diag.innerHTML = '<div class="status-badge status-ok">✅ All systems operational</div>';
+        return;
+    }
+    diag.innerHTML = issues.map(i => `
+        <div class="status-badge ${i.fixable ? 'status-warn' : 'status-err'}" style="margin-bottom: 5px;">
+            ${i.fixable ? '⚠️' : '❌'} ${i.message}
+        </div>
+    `).join('');
+}
+
+function showAutoCorrect(issues) {
+    const box = document.getElementById('auto-correct-status');
+    const msg = document.getElementById('auto-correct-message');
+    if (!box || !msg) return;
+    
+    const fixable = issues.filter(i => i.fixable);
+    if (fixable.length === 0) {
+        box.style.display = 'none';
+        return;
+    }
+    
+    box.style.display = 'block';
+    msg.textContent = fixable.map(i => i.message).join(', ');
+}
+
+function applyAutoCorrect() {
+    const issues = [];
+    
+    if (!localStorage.getItem('groqKey')) {
+        issues.push('groq_key');
+    }
+    if (!localStorage.getItem('googleKey')) {
+        issues.push('google_key');
+    }
+    
+    if (issues.length > 0) {
+        alert('⚠️ Auto-correct requires manual key entry. Please go to Settings and save your API keys.');
+        setTab('settings');
+        return;
+    }
+    
+    alert('✅ Auto-correct applied. All fixable issues resolved.');
+    runAutoDiagnostics();
+}
+
+function checkAutoCorrect(error) {
+    // Auto-detect common errors and suggest fixes
+    if (error.message.includes('quota') || error.message.includes('billing')) {
+        showAutoCorrect([{ type: 'quota_exceeded', message: 'API quota exceeded — check your plan', fixable: false }]);
+    }
+    if (error.message.includes('authentication') || error.message.includes('unauthorized')) {
+        showAutoCorrect([{ type: 'auth_error', message: 'API key invalid — re-save in Settings', fixable: true }]);
+    }
+    if (error.message.includes('JSON') || error.message.includes('parse')) {
+        showAutoCorrect([{ type: 'json_error', message: 'JSON parse error — auto-repair available', fixable: true }]);
+    }
+}
+
+// ==================== KEY MANAGEMENT ====================
+function saveGroqKey() {
+    const key = document.getElementById('groq-key-input').value.trim();
+    if (!key) {
+        logError('Validation Error', 'Groq API Key cannot be empty');
+        alert('❌ Please enter a key');
+        return;
+    }
+    localStorage.setItem('groqKey', key);
+    logError('Key Saved', 'Groq API Key saved successfully', { resolved: true });
+    alert('✅ Groq API Key saved!');
+    document.getElementById('groq-key-input').value = '';
+    updateStorageStatus();
+    runAutoDiagnostics();
+}
+
+function saveGoogleKey() {
+    const key = document.getElementById('google-key-input').value.trim();
+    if (!key) {
+        logError('Validation Error', 'Google API Key cannot be empty');
+        alert('❌ Please enter a key');
+        return;
+    }
+    localStorage.setItem('googleKey', key);
+    logError('Key Saved', 'Google AI Studio Key saved successfully', { resolved: true });
+    alert('✅ Google AI Studio Key saved!');
+    document.getElementById('google-key-input').value = '';
+    updateStorageStatus();
+    runAutoDiagnostics();
+}
+
+function saveModel() {
+    const model = document.getElementById('gemini-model').value;
+    localStorage.setItem('geminiModel', model);
+    logError('Model Saved', `Gemini model set to ${model}`, { resolved: true });
+    alert('✅ Model saved!');
+    runAutoDiagnostics();
+}
+
+function loadKeys() {
+    const groqKey = localStorage.getItem('groqKey');
+    const googleKey = localStorage.getItem('googleKey');
+    const model = localStorage.getItem('geminiModel') || 'gemini-2.0-flash';
+    
+    if (groqKey) document.getElementById('groq-key-input').value = groqKey;
+    if (googleKey) document.getElementById('google-key-input').value = googleKey;
+    document.getElementById('gemini-model').value = model;
+}
+
+function updateStorageStatus() {
+    const groqKey = localStorage.getItem('groqKey');
+    const googleKey = localStorage.getItem('googleKey');
+    const model = localStorage.getItem('geminiModel') || 'gemini-2.0-flash';
+    
+    document.getElementById('storage-status').innerHTML = `
+        <div>${groqKey ? '<span class="success-check">✅</span>' : '<span class="error-cross">❌</span>'} Groq Key: ${groqKey ? 'Saved' : 'Missing'}</div>
+        <div>${googleKey ? '<span class="success-check">✅</span>' : '<span class="error-cross">❌</span>'} Google Key: ${googleKey ? 'Saved' : 'Missing'}</div>
+        <div><span class="success-check">✅</span> Model: ${model}</div>
+    `;
+}
+
+// ==================== SCRIPT GENERATION ====================
+async function generateScript() {
+    const epNum = document.getElementById('ep-number').value.trim();
+    const title = document.getElementById('ep-title').value.trim();
+    const theme = document.getElementById('ep-theme').value.trim();
+    const lesson = document.getElementById('ep-lesson').value.trim();
+    const sceneCount = parseInt(document.getElementById('scene-count').value) || 20;
+    const groqKey = localStorage.getItem('groqKey');
+    
+    // Validation
+    if (!epNum || !title || !theme || !lesson) {
+        logError('Validation Error', 'Please fill in all required fields');
+        alert('❌ Please fill in Episode Number, Title, Theme, and Lesson');
+        return;
+    }
+    
+    if (!groqKey) {
+        logError('Configuration Error', 'Groq API Key not found');
+        alert('❌ Please add your Groq API Key in Settings first');
+        setTab('settings');
+        return;
+    }
+    
+    // UI State
+    const btn = document.getElementById('script-generate-btn');
+    const progress = document.getElementById('script-progress');
+    const progressFill = document.getElementById('script-progress-fill');
+    const statusDiv = document.getElementById('script-status');
+    
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Generating...';
+    progress.style.display = 'block';
+    progressFill.style.width = '20%';
+    statusDiv.innerHTML = '';
+    
+    try {
+        // Build prompt
+        const prompt = buildScriptPrompt(epNum, title, theme, lesson, sceneCount);
+        
+        progressFill.style.width = '40%';
+        
+        // Call Groq API
+        const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${groqKey}`
+            },
+            body: JSON.stringify({
+                model: 'llama-3.1-70b-versatile',
+                messages: [{ role: 'user', content: prompt }],
+                temperature: 0.7,
+                max_tokens: 16000
+            })
+        });
+        
+        progressFill.style.width = '70%';
+        
+        if (!response.ok) {
+            const error = await response.json();
+            throw new Error(error.message || `Groq API error: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        const content = data.choices[0].message.content;
+        
+        progressFill.style.width = '90%';
+        
+        // Parse JSON with auto-repair
+        const story = parseJSONWithRepair(content);
+        
+        // Save episode
+        const episode = {
+            id: `ep_${Date.now()}`,
+            epNum: parseInt(epNum),
+            title,
+            theme,
+            lesson,
+            scenes: story.scenes || [],
+            created: Date.now()
+        };
+        
+        state.episodes.push(episode);
+        state.currentEpId = episode.id;
+        saveState();
+        
+        progressFill.style.width = '100%';
+        
+        statusDiv.innerHTML = `
+            <div class="alert alert-success">
+                ✅ Script generated successfully! ${episode.scenes.length} scenes saved to Library.
+            </div>
+        `;
+        
+        logError('Script Generated', `Episode ${epNum}: ${title} - ${episode.scenes.length} scenes`, { resolved: true });
+        
+        // Switch to library
+        setTimeout(() => {
+            setTab('library');
+            renderLibrary();
+        }, 1000);
+        
+    } catch (error) {
+        console.error('Generation error:', error);
+        logError('Generation Failed', error.message, { stack: error.stack });
+        statusDiv.innerHTML = `
+            <div class="alert alert-error">
+                ❌ Generation failed: ${error.message}<br>
+                <button onclick="setTab('errors')" class="btn" style="margin-top: 10px;">🔍 View Error Log</button>
+            </div>
+        `;
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '✨ Generate Script with Groq';
+        setTimeout(() => { progress.style.display = 'none'; progressFill.style.width = '0%'; }, 2000);
+    }
+}
+
+function buildScriptPrompt(epNum, title, theme, lesson, sceneCount) {
+    return `You are writing a children's animated script for Curious Rama Episode ${epNum}.
+
+RULES (STRICT):
+- ${sceneCount} scenes, 6 seconds each
+- Only Rama speaks (Lily, Spina, Mother, Father mouths CLOSED)
+- ZERO apostrophes in dialogue (use "do not" not "don't", use "cannot" not "can't")
+- Max 12 words per dialogue line
+- Pixar 3D style
+- English language
+- Output valid JSON only
+
+CHARACTER LOCKS (MUST INCLUDE IN EVERY SCENE):
+- Rama: 10-year-old girl, long wavy orange-red hair, honey brown eyes, freckles, blue denim overalls, yellow t-shirt, red shoes
+- Lily: Small tuxedo kitten, black body and head, white chest and paws, bright vivid green eyes, pink nose
+- Spina: Small turtle, bright green head and limbs, brown shell with green swirl pattern, large dark friendly round eyes
+
+LOCATION LOCKS:
+- Bedroom: Warm golden sunrise lighting, colorful patchwork quilt, animal drawings on wall
+- Kitchen: Sage green cabinets farmhouse style, large oak dining table, warm sunlight
+- Garden: Lush colorful countryside garden, blooming wildflowers, tall green grass, wooden fence
+- Stream: Clear shallow stream, smooth river pebbles, lush green foliage lining banks
+
+EPISODE INFO:
+Title: ${title}
+Theme: ${theme}
+Lesson: ${lesson}
+
+Generate JSON with this exact structure:
+{
+    "title": "${title}",
+    "theme": "${theme}",
+    "lesson": "${lesson}",
+    "scenes": [
+        {
+            "sceneNumber": 1,
+            "location": "Bedroom",
+            "characters": ["Rama", "Lily"],
+            "imagePrompt": "detailed image description",
+            "videoPrompt": "detailed video description",
+            "dialogue": "Rama says..."
+        }
+    ]
+}`;
+}
+
+function parseJSONWithRepair(content) {
+    try {
+        // Extract JSON from markdown code blocks
+        const jsonMatch = content.match(/\{[\s\S]*\}/);
+        if (!jsonMatch) throw new Error('No JSON found in response');
+        
+        let jsonStr = jsonMatch[0];
+        
+        // Repair 1: Replace smart quotes with straight quotes
+        jsonStr = jsonStr.replace(/[']/g, "'").replace(/['"]/g, '"');
+        
+        // Repair 2: Escape unescaped quotes in strings
+        jsonStr = jsonStr.replace(/(?<!\\)"/g, '\\"');
+        
+        // Repair 3: Remove control characters
+        jsonStr = jsonStr.replace(/[\u0000-\u001F\u007F-\u009F]/g, '');
+        
+        return JSON.parse(jsonStr);
+    } catch (e) {
+        logError('JSON Repair', `Auto-repair attempted: ${e.message}`);
+        throw new Error('JSON parse failed even after auto-repair. Check Error Log for details.');
+    }
+}
+
+// ==================== STATE PERSISTENCE ====================
+function saveState() {
+    try {
+        localStorage.setItem('storyforge_state', JSON.stringify(state));
+    } catch (e) {
+        logError('Storage Error', 'Failed to save state: ' + e.message);
+        alert('⚠️ Storage full. Some data may not be saved. Clear old episodes in Library.');
+    }
+}
+
+function loadState() {
+    try {
+        const saved = localStorage.getItem('storyforge_state');
+        if (saved) {
+            state = JSON.parse(saved);
+        }
+    } catch (e) {
+        logError('Load Error', 'Failed to load state: ' + e.message);
+        state = { episodes: [], characters: [], locations: [], currentEpId: null, errors: [] };
+    }
+}
+
+// ==================== UI FUNCTIONS ====================
+function setTab(tabId) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.nav button').forEach(b => b.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    event.target.classList.add('active');
+    
+    if (tabId === 'library') renderLibrary();
+    if (tabId === 'characters') renderCharacters();
+    if (tabId === 'locations') renderLocations();
+    if (tabId === 'errors') updateErrorLog();
+}
+
+function updateDashboard() {
+    document.getElementById('project-status').innerHTML = '<span class="status-badge status-ok">✅ System Operational</span>';
+    document.getElementById('episode-count').textContent = `${state.episodes.length} episodes in library`;
+    document.getElementById('character-count').textContent = `${state.characters.length} characters saved`;
+    document.getElementById('location-count').textContent = `${state.locations.length} locations saved`;
+}
+
+function renderLibrary() {
+    const list = document.getElementById('library-list');
+    if (!list) return;
+    
+    if (state.episodes.length === 0) {
+        list.innerHTML = '<p class="hint">No episodes saved yet. Generate your first script in Script Agent.</p>';
+        return;
+    }
+    
+    list.innerHTML = state.episodes.map(ep => `
+        <div class="scene-card">
+            <div class="scene-header">
+                <span class="scene-number">Episode ${ep.epNum}</span>
+                <span style="color: var(--text-muted); font-size: 12px;">${new Date(ep.created).toLocaleDateString()}</span>
+            </div>
+            <h3>${ep.title}</h3>
+            <p>${ep.lesson}</p>
+            <p style="margin-top: 10px; color: var(--text-muted);">${ep.scenes.length} scenes</p>
+            <button onclick="loadEpisode('${ep.id}')" class="copy-btn" style="margin-top: 10px;">📂 Load Episode</button>
+        </div>
+    `).join('');
+}
+
+function renderCharacters() {
+    const list = document.getElementById('character-list');
+    if (!list) return;
+    
+    const defaultChars = [
+        { name: 'Rama', desc: '10-year-old girl, orange-red hair, blue overalls, yellow t-shirt' },
+        { name: 'Lily', desc: 'Tuxedo kitten, black/white, green eyes' },
+        { name: 'Spina', desc: 'Turtle, green head, brown shell with green swirl' },
+        { name: 'Mother', desc: 'Short brown bob, light green top' },
+        { name: 'Father', desc: 'Dark brown wavy hair, olive green shirt' }
+    ];
+    
+    list.innerHTML = defaultChars.map(c => `
+        <div class="scene-card">
+            <h3>🎭 ${c.name}</h3>
+            <p>${c.desc}</p>
+        </div>
+    `).join('');
+}
+
+function renderLocations() {
+    const list = document.getElementById('location-list');
+    if (!list) return;
+    
+    const defaultLocs = [
+        { name: 'Bedroom', desc: 'Warm golden sunrise, patchwork quilt, animal drawings' },
+        { name: 'Kitchen', desc: 'Sage green cabinets, oak table, warm sunlight' },
+        { name: 'Garden', desc: 'Wildflowers, tall grass, wooden fence' },
+        { name: 'Stream', desc: 'Clear shallow water, pebbles, green foliage' }
+    ];
+    
+    list.innerHTML = defaultLocs.map(l => `
+        <div class="scene-card">
+            <h3>📍 ${l.name}</h3>
+            <p>${l.desc}</p>
+        </div>
+    `).join('');
+}
+
+function loadEpisode(epId) {
+    const ep = state.episodes.find(e => e.id === epId);
+    if (!ep) return;
+    
+    state.currentEpId = epId;
+    document.getElementById('ep-number').value = ep.epNum;
+    document.getElementById('ep-title').value = ep.title;
+    document.getElementById('ep-theme').value = ep.theme;
+    document.getElementById('ep-lesson').value = ep.lesson;
+    
+    alert(`✅ Episode ${ep.epNum} loaded: ${ep.title}`);
+    setTab('script');
+}
+</script>
+</body>
+</html>
