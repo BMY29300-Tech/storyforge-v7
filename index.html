@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StoryForge — Curious Rama (Secure)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; }
+        .drop-zone { border: 2px dashed #cbd5e1; transition: all 0.3s ease; }
+        .drop-zone.active { border-color: #3b82f6; background-color: #eff6ff; }
+        .card { background: white; border-radius: 0.75rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1); }
+        .scene-item { border-left: 4px solid #3b82f6; }
+        .scene-list::-webkit-scrollbar { width: 6px; }
+        .scene-list::-webkit-scrollbar-thumb { background-color: #cbd5e1; border-radius: 4px; }
+        /* Secure input styling */
+        .api-input { font-family: monospace; letter-spacing: 2px; }
+    </style>
+</head>
+<body class="text-slate-800 h-screen flex flex-col overflow-hidden">
+
+    <!-- Header -->
+    <header class="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center shrink-0">
+        <div class="flex items-center gap-3">
+            <div class="w-10 h-10 bg-green-500 rounded-lg flex items-center justify-center text-white font-bold text-xl">🌿</div>
+            <div>
+                <h1 class="font-bold text-lg leading-tight">StoryForge Curious Rama</h1>
+                <p class="text-xs text-slate-500">Production Studio v8.3 • Secure Key Entry • FX Flow + Gemini/Grok</p>
+            </div>
+        </div>
+        <div class="flex gap-2">
+            <!-- API Key Input (Secure) -->
+            <div class="relative group">
+                <input type="password" id="apiKeyInput" placeholder="Paste API Key Here..." class="api-input px-3 py-2 border border-slate-300 rounded-md text-sm w-48 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                <span class="absolute right-2 top-2 text-xs text-slate-400 pointer-events-none">🔒</span>
+            </div>
+            
+            <button onclick="document.getElementById('fileInput').click()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-md text-sm font-medium transition">📂 Load JSON</button>
+            <input type="file" id="fileInput" accept=".json" class="hidden" onchange="handleFileSelect(event)">
+            <button onclick="exportAll()" id="btnExportAll" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-md text-sm font-medium transition disabled:opacity-50 disabled:cursor-not-allowed" disabled>📦 Export All</button>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex overflow-hidden">
+        
+        <!-- Sidebar: Episode Info & Locks -->
+        <aside class="w-80 bg-white border-r border-slate-200 flex flex-col shrink-0 overflow-y-auto">
+            <div class="p-5 border-b border-slate-100">
+                <h2 class="font-semibold text-slate-700 mb-4 flex items-center gap-2">⚙️ Setup</h2>
+                <div id="epMeta" class="space-y-3 text-sm">
+                    <div class="p-3 bg-slate-50 rounded-md border border-slate-200">
+                        <span class="block text-xs text-slate-400 uppercase font-bold">Episode</span>
+                        <span id="metaEpNum" class="font-mono font-bold text-slate-700">--</span>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-md border border-slate-200">
+                        <span class="block text-xs text-slate-400 uppercase font-bold">Title</span>
+                        <span id="metaTitle" class="font-medium text-slate-700 truncate">--</span>
+                    </div>
+                    <div class="p-3 bg-slate-50 rounded-md border border-slate-200">
+                        <span class="block text-xs text-slate-400 uppercase font-bold">Theme</span>
+                        <span id="metaTheme" class="text-slate-600 italic">--</span>
+                    </div>
+                </div>
+                
+                <!-- Generation Status -->
+                <div id="genStatus" class="mt-4 p-3 bg-yellow-50 border border-yellow-200 rounded-md text-xs text-yellow-800 hidden">
+                    ⚠️ <strong>Note:</strong> API Key entered. Ready for generation (if implemented).
+                </div>
+            </div>
+
+            <div class="p-5 flex-1">
+                <h2 class="font-semibold text-slate-700 mb-3 flex items-center gap-2">🔒 Character & Location Locks</h2>
+                <div class="space-y-4 text-xs leading-relaxed text-slate-600">
+                    <div class="bg-orange-50 p-3 rounded border border-orange-100">
+                        <div class="font-bold text-orange-800 mb-1">🧒 Rama</div>
+                        <p id="lockRama">Loading...</p>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded border border-slate-200">
+                        <div class="font-bold text-slate-800 mb-1">🐱 Lily</div>
+                        <p id="lockLily">Loading...</p>
+                    </div>
+                    <div class="bg-green-50 p-3 rounded border border-green-100">
+                        <div class="font-bold text-green-800 mb-1">🐢 Spina</div>
+                        <p id="lockSpina">Loading...</p>
+                    </div>
+                    <div class="bg-indigo-50 p-3 rounded border border-indigo-100">
+                        <div class="font-bold text-indigo-800 mb-1">👨‍👩‍ Parents</div>
+                        <p id="lockParents">Loading...</p>
+                    </div>
+                    <div class="bg-blue-50 p-3 rounded border border-blue-100">
+                        <div class="font-bold text-blue-800 mb-1">🏠 Locations</div>
+                        <p id="lockLocations">Loading...</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Center: Scene List -->
+        <section class="flex-1 flex flex-col min-w-0 bg-slate-50">
+            <div class="px-6 py-4 border-b border-slate-200 bg-white flex justify-between items-center">
+                <h2 class="font-semibold text-slate-700 flex items-center gap-2">🎬 Scenes <span id="sceneCountBadge" class="bg-slate-100 text-slate-600 px-2 py-0.5 rounded-full text-xs">0</span></h2>
+                <button onclick="clearData()" class="text-xs text-red-500 hover:text-red-700 font-medium">↩ Clear Data</button>
+            </div>
+            
+            <div id="sceneListContainer" class="flex-1 overflow-y-auto p-6 scene-list space-y-4">
+                <div id="emptyState" class="h-full flex flex-col items-center justify-center text-slate-400">
+                    <div class="text-4xl mb-3">🎬</div>
+                    <p class="font-medium">Load <code class="bg-slate-200 px-1 rounded">EP2.json</code> to see scenes.</p>
+                    <p class="text-xs mt-2">Your API key is safe (not stored in file).</p>
+                </div>
+                <div id="scenesWrapper" class="hidden space-y-4"></div>
+            </div>
+        </section>
+
+        <!-- Right: Export & QA -->
+        <aside class="w-80 bg-white border-l border-slate-200 flex flex-col shrink-0 overflow-y-auto">
+            <div class="p-5 border-b border-slate-100">
+                <h2 class="font-semibold text-slate-700 mb-4 flex items-center gap-2">📦 Export Files</h2>
+                <div class="grid grid-cols-1 gap-2">
+                    <button onclick="downloadFile('json')" class="text-left px-3 py-2 hover:bg-slate-50 rounded text-sm text-slate-700 border border-transparent hover:border-slate-200 transition">📋 Episode JSON</button>
+                    <button onclick="downloadFile('audio')" class="text-left px-3 py-2 hover:bg-slate-50 rounded text-sm text-slate-700 border border-transparent hover:border-slate-200 transition">🎙️ Audio Script (Vertical)</button>
+                    <button onclick="downloadFile('image')" class="text-left px-3 py-2 hover:bg-slate-50 rounded text-sm text-slate-700 border border-transparent hover:border-slate-200 transition">🖼️ Image Prompts (FX Flow)</button>
+                    <button onclick="downloadFile('video')" class="text-left px-3 py-2 hover:bg-slate-50 rounded text-sm text-slate-700 border border-transparent hover:border-slate-200 transition">🎞️ Video Prompts (Gemini/Grok)</button>
+                    <button onclick="downloadFile('brief')" class="text-left px-3 py-2 hover:bg-slate-50 rounded text-sm text-slate-700 border border-transparent hover:border-slate-200 transition">📄 Production Brief</button>
+                </div>
+            </div>
+
+            <div class="p-5 flex-1">
+                <h2 class="font-semibold text-slate-700 mb-3 flex items-center gap-2">✅ Quality Checklist</h2>
+                <div id="qaList" class="space-y-2 text-xs text-slate-600">
+                    <p class="italic text-slate-400">Load episode to see checklist.</p>
+                </div>
+                
+                <div class="mt-6 pt-6 border-t border-slate-100">
+                    <h3 class="font-semibold text-slate-700 text-xs uppercase mb-2">Workflow</h3>
+                    <ol class="list-decimal list-inside space-y-1 text-xs text-slate-500">
+                        <li>Gen Images (FX Flow)</li>
+                        <li>Animate (Gemini/Grok)</li>
+                        <li>Voice/SFX (ElevenLabs)</li>
+                        <li>Assembly (CapCut)</li>
+                    </ol>
+                </div>
+            </div>
+        </aside>
+    </main>
+
+    <script>
+        let currentData = null;
+
+        // Monitor API Key Input for UI feedback
+        const apiKeyInput = document.getElementById('apiKeyInput');
+        apiKeyInput.addEventListener('input', () => {
+            const statusDiv = document.getElementById('genStatus');
+            if(apiKeyInput.value.length > 5) {
+                statusDiv.classList.remove('hidden');
+                statusDiv.innerHTML = "✅ <strong>API Key Detected:</strong> Ready for external generation scripts.";
+                statusDiv.className = "mt-4 p-3 bg-green-50 border border-green-200 rounded-md text-xs text-green-800";
+            } else {
+                statusDiv.classList.add('hidden');
+            }
+        });
+
+        // Helper: Clean JSON keys (remove trailing spaces like "project ")
+        function cleanKeys(obj) {
+            if (obj === null || typeof obj !== "object") return obj;
+            if (Array.isArray(obj)) return obj.map(cleanKeys);
+            
+            const cleaned = {};
+            for (const [key, value] of Object.entries(obj)) {
+                const newKey = key.trim();
+                cleaned[newKey] = cleanKeys(value);
+            }
+            return cleaned;
+        }
+
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const rawJson = JSON.parse(e.target.result);
+                    currentData = cleanKeys(rawJson); // Auto-fix spaces in keys
+                    renderApp();
+                } catch (err) {
+                    alert("Error parsing JSON: " + err.message);
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        function clearData() {
+            currentData = null;
+            document.getElementById('epMeta').innerHTML = '';
+            document.getElementById('scenesWrapper').innerHTML = '';
+            document.getElementById('scenesWrapper').classList.add('hidden');
+            document.getElementById('emptyState').classList.remove('hidden');
+            document.getElementById('sceneCountBadge').innerText = '0';
+            document.getElementById('qaList').innerHTML = '<p class="italic text-slate-400">Load episode to see checklist.</p>';
+            document.getElementById('btnExportAll').disabled = true;
+            document.getElementById('genStatus').classList.add('hidden');
+            
+            // Reset Locks
+            document.getElementById('lockRama').innerText = "Age 10. Long wavy orange-red hair. Honey-brown eyes. Freckles. Day: yellow t-shirt + blue overalls + RED sneakers. Night: light blue nightshirt + barefoot. Round childlike face. Max 1–2 blinks.";
+            document.getElementById('lockLily').innerText = "Tuxedo kitten. Black/White pattern. Green eyes. Mouth CLOSED.";
+            document.getElementById('lockSpina').innerText = "Bright green turtle. Brown shell w/ green swirl. FREE-ROAMING (No tank).";
+            document.getElementById('lockParents').innerText = "Mom: Green top, Bob hair (Right). Dad: Olive shirt (Left).";
+            document.getElementById('lockLocations').innerText = "Bedroom · Kitchen · Garden · Stream.";
+        }
+
+        function renderApp() {
+            if (!currentData) return;
+
+            // 1. Render Meta
+            document.getElementById('metaEpNum').innerText = `EP ${currentData.episode || '??'}`;
+            document.getElementById('metaTitle').innerText = currentData.title || 'Untitled';
+            document.getElementById('metaTheme').innerText = currentData.theme || 'No theme';
+            document.getElementById('btnExportAll').disabled = false;
+
+            // 2. Render Locks
+            if (currentData.characters) {
+                const c = currentData.characters;
+                if(c.rama) document.getElementById('lockRama').innerText = `Age ${c.rama.age}. ${c.rama.hair}. ${c.rama.eyes}. ${c.rama.outfit_day}`;
+                if(c.lily) document.getElementById('lockLily').innerText = `${c.lily.species}. ${c.lily.pattern}. ${c.lily.eyes}. ${c.lily.behavior}`;
+                if(c.spina) document.getElementById('lockSpina').innerText = `${c.spina.skin}. ${c.spina.shell}. ${c.spina.constraint}`;
+                if(c.parents) document.getElementById('lockParents').innerText = `Mom: ${c.parents.mother}. Dad: ${c.parents.father}`;
+            }
+            if (currentData.locations) {
+                const l = currentData.locations;
+                document.getElementById('lockLocations').innerText = Object.keys(l).map(k => `${k.charAt(0).toUpperCase() + k.slice(1)}`).join(' · ');
+            }
+
+            // 3. Render Scenes
+            const wrapper = document.getElementById('scenesWrapper');
+            wrapper.innerHTML = '';
+            wrapper.classList.remove('hidden');
+            document.getElementById('emptyState').classList.add('hidden');
+            document.getElementById('sceneCountBadge').innerText = currentData.scenes?.length || 0;
+
+            if (currentData.scenes) {
+                currentData.scenes.forEach(scene => {
+                    const div = document.createElement('div');
+                    div.className = 'card p-4 scene-item hover:shadow-md transition cursor-pointer';
+                    div.onclick = () => toggleSceneDetails(scene.number);
+                    div.innerHTML = `
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <span class="text-xs font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded">SCENE ${scene.number}</span>
+                                <h3 class="font-bold text-slate-800 mt-1">${scene.location}</h3>
+                                <p class="text-xs text-slate-500 mt-1 truncate">${scene.action}</p>
+                            </div>
+                            <span class="text-xs text-slate-400">${scene.characters?.join(', ') || ''}</span>
+                        </div>
+                        <div id="details-${scene.number}" class="hidden mt-3 pt-3 border-t border-slate-100 text-xs space-y-2">
+                            <div><strong class="text-slate-700">Dialogue:</strong> <span class="text-slate-600 italic">"${scene.dialogue}"</span></div>
+                            <div><strong class="text-slate-700">SFX:</strong> <span class="text-slate-600">${scene.sfx}</span></div>
+                            <div class="bg-slate-50 p-2 rounded border border-slate-200">
+                                <strong class="text-slate-700 block mb-1">Prompt Preview:</strong>
+                                <p class="text-slate-500 line-clamp-3">${scene.video_prompt}</p>
+                            </div>
+                        </div>
+                    `;
+                    wrapper.appendChild(div);
+                });
+            }
+
+            // 4. Render QA
+            const qaList = document.getElementById('qaList');
+            qaList.innerHTML = '';
+            if (currentData.quality_checklist) {
+                currentData.quality_checklist.forEach(item => {
+                    const li = document.createElement('div');
+                    li.className = 'flex items-start gap-2';
+                    li.innerHTML = `<span class="text-green-500 mt-0.5">✓</span><span>${item}</span>`;
+                    qaList.appendChild(li);
+                });
+            }
+        }
+
+        function toggleSceneDetails(num) {
+            const el = document.getElementById(`details-${num}`);
+            if (el) el.classList.toggle('hidden');
+        }
+
+        // --- Export Logic ---
+
+        function getVerticalPrompt(scene, type) {
+            const chars = currentData.characters;
+            const locs = currentData.locations;
+            
+            let charBlock = "CHARACTERS & LOCATION:\n";
+            if(chars) {
+                const ramaOutfit = (scene.location === 'BEDROOM' && scene.number === 1) ? chars.rama.outfit_night : chars.rama.outfit_day;
+                charBlock += `Rama (${ramaOutfit}, ${chars.rama.hair}, ${chars.rama.eyes})\n`;
+                if(scene.characters.includes('Lily')) charBlock += `Lily (${chars.lily.pattern}, ${chars.lily.eyes})\n`;
+                if(scene.characters.includes('Spina')) charBlock += `Spina (${chars.spina.skin}, ${chars.spina.shell}, ${chars.spina.constraint})\n`;
+                if(chars.parents) {
+                    if(scene.characters.includes('Mother')) charBlock += `Mother (${chars.parents.mother})\n`;
+                    if(scene.characters.includes('Father')) charBlock += `Father (${chars.parents.father})\n`;
+                }
+            }
+            if(locs && locs[scene.location.toLowerCase()]) {
+                charBlock += `Location: ${locs[scene.location.toLowerCase()]}\n`;
+            }
+
+            let actionBlock = `\nACTION:\n${scene.action}\nPROMPT: ${scene.video_prompt}\n`;
+            let negBlock = `\nNEGATIVE PROMPTS:\n${scene.negative_prompt || "distorted hands, extra limbs, morphing faces, realistic human, blurry, low resolution, text, watermark, music"}`;
+            let diagBlock = `\nDIALOGUE:\n${scene.dialogue}`;
+
+            if (type === 'image') {
+                return `${charBlock}\n\nACTION:\nStatic pose ready for animation. ${scene.action}.\nPROMPT: ${scene.video_prompt} High detail, sharp focus, 8k, no motion blur.\n\nNEGATIVE PROMPTS:\n${scene.negative_prompt || "motion blur"}\n\nDIALOGUE:\n${scene.dialogue}`;
+            } else if (type === 'video') {
+                return `${charBlock}${actionBlock}${negBlock}${diagBlock}`;
+            } else if (type === 'audio') {
+                return `SCENE ${scene.number}\nDIALOGUE: ${scene.dialogue}\nSFX: ${scene.sfx}\nNOTE: Export WAV 44.1kHz mono, normalize -3dB.`;
+            }
+            return "";
+        }
+
+        function downloadFile(type) {
+            if (!currentData) return alert("Please load a JSON file first.");
+            
+            let content = "";
+            let filename = `EP${currentData.episode}_${type}.txt`;
+
+            if (type === 'json') {
+                content = JSON.stringify(currentData, null, 2);
+                filename = `EP${currentData.episode}_source.json`;
+            } else if (type === 'audio') {
+                content = `AUDIO SCRIPT - EP ${currentData.episode}: ${currentData.title}\n${"=".repeat(50)}\n\n`;
+                currentData.scenes.forEach(s => content += getVerticalPrompt(s, 'audio') + "\n\n");
+            } else if (type === 'image') {
+                content = `IMAGE PROMPTS (Google FX Flow) - EP ${currentData.episode}\n${"=".repeat(50)}\n\n`;
+                currentData.scenes.forEach(s => content += `SCENE ${s.number} [${s.location}]\n${getVerticalPrompt(s, 'image')}\n\n`);
+            } else if (type === 'video') {
+                content = `VIDEO PROMPTS (Gemini/Grok) - EP ${currentData.episode}\n${"=".repeat(50)}\n\n`;
+                currentData.scenes.forEach(s => content += `SCENE ${s.number} [${s.location}]\n${getVerticalPrompt(s, 'video')}\n\n`);
+            } else if (type === 'brief') {
+                content = `PRODUCTION BRIEF - EP ${currentData.episode}: ${currentData.title}\nTheme: ${currentData.theme}\nMoral: ${currentData.moral}\n\nWORKFLOW:\n1. Generate Images in Google FX Flow.\n2. Animate in Gemini/Grok using Video Prompts + Uploaded Images.\n3. Generate Audio via ElevenLabs/ChatterBox.\n4. Assemble in CapCut.\n\nQUALITY CHECKLIST:\n${currentData.quality_checklist?.join('\n') || 'None'}`;
+            }
+
+            const blob = new Blob([content], { type: "text/plain;charset=utf-8" });
+            saveAs(blob, filename);
+        }
+
+        function exportAll() {
+            if (!currentData) return;
+            const zip = new JSZip();
+            
+            zip.file(`EP${currentData.episode}_source.json`, JSON.stringify(currentData, null, 2));
+            
+            const buildContent = (type) => {
+                let c = type === 'json' ? JSON.stringify(currentData, null, 2) : `FILE FOR ${type.toUpperCase()}\n\n`;
+                if(type !== 'json') {
+                    currentData.scenes.forEach(s => c += getVerticalPrompt(s, type) + "\n\n");
+                }
+                return c;
+            };
+
+            zip.file(`EP${currentData.episode}_source.json`, buildContent('json'));
+            zip.file(`EP${currentData.episode}_audio_script.txt`, buildContent('audio'));
+            zip.file(`EP${currentData.episode}_image_prompts_FXFlow.txt`, buildContent('image'));
+            zip.file(`EP${currentData.episode}_video_prompts_GeminiGrok.txt`, buildContent('video'));
+            
+            let brief = `PRODUCTION BRIEF - EP ${currentData.episode}\nTheme: ${currentData.theme}\n\nWORKFLOW:\n1. FX Flow (Images)\n2. Gemini/Grok (Video)\n3. CapCut (Edit)\n\nCHECKLIST:\n${currentData.quality_checklist?.join('\n')}`;
+            zip.file(`EP${currentData.episode}_production_brief.txt`, brief);
+
+            zip.generateAsync({type:"blob"}).then(function(content) {
+                saveAs(content, `StoryForge_EP${currentData.episode}_Complete.zip`);
+            });
+        }
+    </script>
+</body>
+</html>
